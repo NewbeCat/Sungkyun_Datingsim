@@ -24,16 +24,18 @@ public class DialogueObject : ScriptableObject
     public List<Dialogue> dialogue;
 }
 
+//
 [System.Serializable]
 public class ProfileOptions
 {
-    public FaceImage faceImage;
+    public FaceImage image;
 }
 
 [System.Serializable]
 public class OnePersonOptions
 {
-    public FaceImage faceImage;
+    public OneFocus focus;
+    public standImage standImage;
     public ImagePlace imagePlace;
     public ImageEffect imageEffect;
 }
@@ -41,13 +43,15 @@ public class OnePersonOptions
 [System.Serializable]
 public class TwoPersonOptions
 {
-    public FaceImage faceA;
-    public FaceImage faceB;
-    public ImageEffect effectA;
-    public ImageEffect effectB;
+    public TwoFocus focus;
+    public standImage imageLeft;
+    public standImage imageRight;
+    public ImageEffect effectLeft;
+    public ImageEffect effectRight;
 }
 
 
+//
 public enum DialogueOptions
 {
     NoImg,
@@ -74,11 +78,18 @@ public enum DialogueTextAnimation
 
 public enum FaceImage
 {
-    Normal,
-    Happy,
-    Sad,
-    Angry,
-    Surprised,
+    A_Normal,
+    A_Happy,
+    B_Normal,
+    B_Happy,
+}
+
+public enum standImage
+{
+    A_Normal,
+    A_Happy,
+    B_Normal,
+    B_Happy,
 }
 
 public enum ImagePlace
@@ -94,4 +105,18 @@ public enum ImageEffect
     StepUp,
     StepDown,
     Jump,
+}
+
+public enum OneFocus
+{
+    Default,
+    None,
+}
+
+public enum TwoFocus
+{
+    Left,
+    Right,
+    Both,
+    None,
 }
