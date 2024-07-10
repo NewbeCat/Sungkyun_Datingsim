@@ -293,6 +293,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1320440519}
   - component: {fileID: 1320440520}
+  - component: {fileID: 1320440521}
   m_Layer: 0
   m_Name: TalkControl
   m_TagString: Untagged
@@ -329,6 +330,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f21a0baf0a297f4582230fed08f157b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1320440521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1320440518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20377033336f5ce4e9d7ea6daf208a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  window: {fileID: 1476851300}
+  windowRectTransform: {fileID: 1476851301}
+  windowCanvasGroup: {fileID: 1476851302}
+  openDirection: 0
+  closeDirection: 1
+  distanceToAnimate: {x: 100, y: 100}
+  easingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  animationDuration: 0.5
 --- !u!1001 &1468878013
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -343,7 +387,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2329274145620868920, guid: e3787012a385ab742a3922d0f249daed, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3987912788538769323, guid: e3787012a385ab742a3922d0f249daed, type: 3}
       propertyPath: m_Pivot.x
@@ -425,6 +469,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8948576365727021814, guid: e3787012a385ab742a3922d0f249daed, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -434,6 +482,21 @@ PrefabInstance:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3987912788538769323, guid: e3787012a385ab742a3922d0f249daed, type: 3}
   m_PrefabInstance: {fileID: 1468878013}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1476851300 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8948576365727021814, guid: c82380029c1e01441a9f9b1e5daa1bd5, type: 3}
+  m_PrefabInstance: {fileID: 1903183623}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1476851301 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4060479511208969537, guid: c82380029c1e01441a9f9b1e5daa1bd5, type: 3}
+  m_PrefabInstance: {fileID: 1903183623}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &1476851302 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 1555519165945618846, guid: c82380029c1e01441a9f9b1e5daa1bd5, type: 3}
+  m_PrefabInstance: {fileID: 1903183623}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1903183623
 PrefabInstance:
@@ -449,7 +512,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2329274145620868920, guid: c82380029c1e01441a9f9b1e5daa1bd5, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3987912788538769323, guid: c82380029c1e01441a9f9b1e5daa1bd5, type: 3}
       propertyPath: m_Pivot.x
@@ -529,6 +592,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3987912788538769323, guid: c82380029c1e01441a9f9b1e5daa1bd5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8948576365727021814, guid: c82380029c1e01441a9f9b1e5daa1bd5, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
