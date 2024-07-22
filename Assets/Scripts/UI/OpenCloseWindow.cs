@@ -37,8 +37,28 @@ public class OpenCloseWindow : MonoBehaviour
 
     private Coroutine _animateWindowCoroutine;
 
+    [Header("Helpers")]
+    [SerializeField] private bool displayGizmos = true;
+
     public static event Action OnOpenWindow;
     public static event Action OnCloseWindow;
+
+    private enum DisplayGizmosAtLocation
+    {
+        Open,
+        Close,
+        Both,
+        Situational,
+        None
+    }
+
+    private DisplayGizmosAtLocation gizmoHandler;
+    private Color gizmoOpenColor = Color.green;
+    private Color gizmoCloseColor = Color.red;
+    private Color gizmoInitalLocationColor = Color.grey;
+    private Vector2 _windowOpenPositionForGizmos;
+    private Vector2 _windowClosePositionForGizmos;
+    private Vector2 _initialPositionForGizmos;
 
 
 
@@ -55,6 +75,8 @@ public class OpenCloseWindow : MonoBehaviour
 
 
         _initialPosition = window.transform.position;
+
+        RecalculateGizmoPositions();
     }
 
     #region AnimationFunctionality
@@ -64,8 +86,6 @@ public class OpenCloseWindow : MonoBehaviour
         _initialPosition = window.transform.position;
 
         InitializeOffsetPositions();
-
-        ToggleOpenClose();
     }
 
     private void InitializeOffsetPositions()
@@ -76,6 +96,7 @@ public class OpenCloseWindow : MonoBehaviour
         _rightOffset = new Vector2(+distanceToAnimate.x, 0);
         _leftOffset = new Vector2(-distanceToAnimate.x, 0);
     }
+
     public void ToggleOpenClose()
     {
         if (_isOpen)
@@ -83,6 +104,7 @@ public class OpenCloseWindow : MonoBehaviour
         else
             OpenWindow();
     }
+
     public void OpenWindow()
     {
         if (_isOpen)
@@ -96,6 +118,7 @@ public class OpenCloseWindow : MonoBehaviour
 
         _animateWindowCoroutine = StartCoroutine(AnimateWindow(true));
     }
+
     public void CloseWindow()
     {
         if (!_isOpen)
@@ -169,6 +192,85 @@ public class OpenCloseWindow : MonoBehaviour
             window.transform.position = _initialPosition;
         }
     }
+
+    #endregion
+
+    #region Visualisation
+    private void Refresh()
+    {
+        OnValidate();
+    }
+
+    private void RecalculateGizmoPositions()
+    {
+        InitializeOffsetPositions();
+
+        _initialPositionForGizmos = new Vector2(window.transform.position.x, window.transform.position.y) + windowRectTransform.rect.center;
+        _windowOpenPositionForGizmos = _initialPositionForGizmos + GetOffset(openDirection);
+        _windowClosePositionForGizmos = _windowOpenPositionForGizmos + GetOffset(closeDirection);
+    }
+
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!displayGizmos)
+            return;
+
+        if (window == null)
+            return;
+
+        if (windowRectTransform == null)
+            return;
+
+        Gizmos.color = gizmoInitalLocationColor;
+        Gizmos.DrawWireCube(_initialPositionForGizmos, windowRectTransform.sizeDelta);
+
+        switch (gizmoHandler)
+        {
+            case DisplayGizmosAtLocation.Open:
+                DrawCube(_windowOpenPositionForGizmos, true);
+                break;
+
+            case DisplayGizmosAtLocation.Close:
+                DrawCube(_windowClosePositionForGizmos, false);
+                break;
+
+            case DisplayGizmosAtLocation.Both:
+                DrawCube(_windowClosePositionForGizmos, false);
+                DrawCube(_windowOpenPositionForGizmos, true);
+                break;
+
+            case DisplayGizmosAtLocation.Situational:
+                if (_isOpen)
+                    DrawCube(_windowClosePositionForGizmos, true);
+                else
+                    DrawCube(_windowOpenPositionForGizmos, false);
+                break;
+
+            default:
+            case DisplayGizmosAtLocation.None:
+                break;
+        }
+
+        if (gizmoHandler != DisplayGizmosAtLocation.None)
+            DrawIndicators();
+    }
+
+    private void DrawCube(Vector2 windowPosition, bool opens)
+    {
+        Gizmos.color = opens ? gizmoOpenColor : gizmoCloseColor;
+        Gizmos.DrawWireCube(windowPosition, windowRectTransform.sizeDelta);
+    }
+
+    private void DrawIndicators()
+    {
+        Gizmos.color = gizmoOpenColor;
+        Gizmos.DrawLine(_initialPositionForGizmos, _windowOpenPositionForGizmos);
+
+        Gizmos.color = gizmoCloseColor;
+        Gizmos.DrawLine(_windowOpenPositionForGizmos, _windowClosePositionForGizmos);
+    }
+
 
     #endregion
 }
