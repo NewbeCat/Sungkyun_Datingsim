@@ -74,9 +74,20 @@ public class DialogueManager : MonoBehaviour
     {
         windowOnOff.OpenWindow();
         Debug.Log("Opening window and displaying dialogue.");
+
         string t_ReplaceText = dialogues[lineCount].contexts[contextCount];
         t_ReplaceText = t_ReplaceText.Replace("$", ",");
         txt_Dialogue.text = t_ReplaceText;
+
+        if (dialogues[lineCount].name == "N")
+        {
+            txt_Name.text = "";
+        }
+        else
+        {
+            txt_Name.text = dialogues[lineCount].name;
+        }
+
         isNext = true;
         Debug.Log("Dialogue displayed: " + t_ReplaceText);
 
