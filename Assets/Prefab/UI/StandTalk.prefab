@@ -253,6 +253,7 @@ MonoBehaviour:
   DialogueBar: {fileID: 2329274145620868920}
   txt_Dialogue: {fileID: 5749761059555892459}
   txt_Name: {fileID: 8339771920633172489}
+  typeEffect: {fileID: 436793265479438045}
 --- !u!114 &481795808040512888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,6 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41a87e0e443f7f04daa42fc62fcc674c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _readyForNewText: 1
   charactersPerSecond: 20
   interpunctuationDelay: 0.5
   quickSkip: 0

@@ -2,23 +2,22 @@ using System;
 using System.Collections;
 using UnityEngine;
 using TMPro;
-using Object = UnityEngine.Object;
 
 public class TypeEffect : MonoBehaviour
 {
-    private TextMeshProUGUI _textBox;
-
     // Basic Typewriter Functionality
+    private TextMeshProUGUI _textBox;
     private int _currentVisibleCharacterIndex;
+    private int maxlength = 0;
+
     private Coroutine _typewriterCoroutine;
-    private bool _readyForNewText = true;
 
     private WaitForSeconds _simpleDelay;
     private WaitForSeconds _interpunctuationDelay;
 
     [Header("Typewriter Settings")]
     [SerializeField] private float charactersPerSecond = 20;
-    [SerializeField] private float interpunctuationDelay = 0.5f;
+    [SerializeField] private float interpunctuationDelay = 0.10f;
 
 
     // Skipping Functionality
@@ -34,14 +33,12 @@ public class TypeEffect : MonoBehaviour
     private WaitForSeconds _textboxFullEventDelay;
     [SerializeField][Range(0.1f, 0.5f)] private float sendDoneDelay = 0.25f;
 
-    public static event Action CompleteTextRevealed;
-    public static event Action<char> CharacterRevealed;
+    public event Action CompleteTextRevealed;
+    public event Action<char> CharacterRevealed;
 
 
     private void Awake()
     {
-        _textBox = GetComponent<TextMeshProUGUI>();
-
         _simpleDelay = new WaitForSeconds(1 / charactersPerSecond);
         _interpunctuationDelay = new WaitForSeconds(interpunctuationDelay);
 
@@ -49,34 +46,13 @@ public class TypeEffect : MonoBehaviour
         _textboxFullEventDelay = new WaitForSeconds(sendDoneDelay);
     }
 
-    private void OnEnable()
+    public void TypingNewText(TextMeshProUGUI textbox, string newstring)
     {
-        TMPro_EventManager.TEXT_CHANGED_EVENT.Add(PrepareForNewText);
-    }
 
-    private void OnDisable()
-    {
-        TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(PrepareForNewText);
-    }
-
-    #region Skipfunctionality
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            if (_textBox.maxVisibleCharacters != _textBox.textInfo.characterCount - 1)
-                Skip();
-        }
-    }
-    #endregion
-
-    private void PrepareForNewText(Object obj)
-    {
-        if (obj != _textBox || !_readyForNewText || _textBox.maxVisibleCharacters >= _textBox.textInfo.characterCount)
-            return;
+        _textBox = textbox;
+        _textBox.text = newstring;
 
         CurrentlySkipping = false;
-        _readyForNewText = false;
 
         if (_typewriterCoroutine != null)
             StopCoroutine(_typewriterCoroutine);
@@ -84,27 +60,28 @@ public class TypeEffect : MonoBehaviour
         _textBox.maxVisibleCharacters = 0;
         _currentVisibleCharacterIndex = 0;
 
-        _typewriterCoroutine = StartCoroutine(Typewriter());
+        _typewriterCoroutine = StartCoroutine(Typewriter(newstring));
     }
 
-    private IEnumerator Typewriter()
+    private IEnumerator Typewriter(string newstring)
     {
-        TMP_TextInfo textInfo = _textBox.textInfo;
+        maxlength = newstring.Length;
+        Debug.Log("max = " + maxlength);
 
-        while (_currentVisibleCharacterIndex < textInfo.characterCount + 1)
+        while (_currentVisibleCharacterIndex < maxlength + 1)
         {
-            var lastCharacterIndex = textInfo.characterCount - 1;
+            var lastCharacterIndex = maxlength - 1;
+            Debug.Log("last size =" + lastCharacterIndex);
 
             if (_currentVisibleCharacterIndex >= lastCharacterIndex)
             {
                 _textBox.maxVisibleCharacters++;
                 yield return _textboxFullEventDelay;
                 CompleteTextRevealed?.Invoke();
-                _readyForNewText = true;
                 yield break;
             }
 
-            char character = textInfo.characterInfo[_currentVisibleCharacterIndex].character;
+            char character = newstring[_currentVisibleCharacterIndex];
 
             _textBox.maxVisibleCharacters++;
 
@@ -124,28 +101,15 @@ public class TypeEffect : MonoBehaviour
         }
     }
 
-    private void Skip(bool quickSkipNeeded = false)
+    public void Skip(bool quickSkipNeeded = false)
     {
         if (CurrentlySkipping)
             return;
 
         CurrentlySkipping = true;
 
-        if (!quickSkip || !quickSkipNeeded)
-        {
-            StartCoroutine(SkipSpeedupReset());
-            return;
-        }
-
         StopCoroutine(_typewriterCoroutine);
-        _textBox.maxVisibleCharacters = _textBox.textInfo.characterCount;
-        _readyForNewText = true;
+        _textBox.maxVisibleCharacters = maxlength - 1;
         CompleteTextRevealed?.Invoke();
-    }
-
-    private IEnumerator SkipSpeedupReset()
-    {
-        yield return new WaitUntil(() => _textBox.maxVisibleCharacters == _textBox.textInfo.characterCount - 1);
-        CurrentlySkipping = false;
     }
 }

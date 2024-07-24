@@ -12,6 +12,7 @@ public class DialogueManager : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI txt_Dialogue;
     [SerializeField] TextMeshProUGUI txt_Name;
+    [SerializeField] private TypeEffect typeEffect;
 
     Dialogue[] dialogues;
     bool isDialogue = false; //대화중 여부
@@ -22,29 +23,45 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         windowOnOff = DialogueBar.GetComponent<OpenCloseWindow>();
+        typeEffect.CompleteTextRevealed += HandleComplete;
+    }
+
+    void OnDestroy()
+    {
+        typeEffect.CompleteTextRevealed -= HandleComplete;
     }
 
     void Update()
     {
-        if (isDialogue == true && isNext == true && Input.GetKeyDown(KeyCode.Space))
+        if (isDialogue == true && Input.GetKeyDown(KeyCode.Space))
         {
-            isNext = false;
-            txt_Dialogue.text = "";
-            if (++contextCount < dialogues[lineCount].contexts.Length)
+            if (isNext == true)
             {
-                StartCoroutine(Writer());
-            }
-            else
-            {
-                contextCount = 0;
-                if (++lineCount < dialogues.Length)
+                isNext = false;
+                txt_Dialogue.text = "";
+                if (++contextCount < dialogues[lineCount].contexts.Length)
                 {
+                    Debug.Log("starting new writer");
                     StartCoroutine(Writer());
                 }
                 else
                 {
-                    EndDialogue();
+                    contextCount = 0;
+                    if (++lineCount < dialogues.Length)
+                    {
+                        Debug.Log("starting new writer of different speaker");
+                        StartCoroutine(Writer());
+                    }
+                    else
+                    {
+                        EndDialogue();
+                    }
                 }
+            }
+            else
+            {
+                Debug.Log("Skippsies");
+                typeEffect.Skip();
             }
         }
     }
@@ -75,19 +92,16 @@ public class DialogueManager : MonoBehaviour
 
         string t_ReplaceText = dialogues[lineCount].contexts[contextCount];
         t_ReplaceText = t_ReplaceText.Replace("$", ",");
-        txt_Dialogue.text = t_ReplaceText;
+        typeEffect.TypingNewText(txt_Dialogue, t_ReplaceText);
 
-        if (dialogues[lineCount].name == "N")
-        {
-            txt_Name.text = "";
-        }
-        else
-        {
-            txt_Name.text = dialogues[lineCount].name;
-        }
-
-        isNext = true;
+        txt_Name.text = dialogues[lineCount].name == "N" ? "" : dialogues[lineCount].name;
 
         yield return null;
+    }
+
+    private void HandleComplete()
+    {
+        isNext = true;
+        Debug.Log("Typewriter complete, isNext set to true.");
     }
 }
