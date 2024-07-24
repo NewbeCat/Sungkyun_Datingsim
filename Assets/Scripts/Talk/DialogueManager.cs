@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 public class DialogueManager : MonoBehaviour
@@ -25,9 +26,8 @@ public class DialogueManager : MonoBehaviour
 
     void Update()
     {
-        if (isDialogue && isNext && Input.GetKeyDown(KeyCode.Space))
+        if (isDialogue == true && isNext == true && Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("Space key pressed, proceeding to next dialogue.");
             isNext = false;
             txt_Dialogue.text = "";
             if (++contextCount < dialogues[lineCount].contexts.Length)
@@ -54,7 +54,7 @@ public class DialogueManager : MonoBehaviour
         txt_Dialogue.text = "";
         txt_Name.text = "";
         dialogues = p_dialogues;
-        isDialogue = true; // Set isDialogue to true when showing dialogue
+        isDialogue = true;
         StartCoroutine(Writer());
     }
 
@@ -65,15 +65,13 @@ public class DialogueManager : MonoBehaviour
         lineCount = 0;
         dialogues = null;
         isNext = false;
-
+        EventSystem.current.SetSelectedGameObject(null); // 눌럿던 버튼에 집중하는 일을 방지 - space버튼만 생기는 에러
         windowOnOff.CloseWindow();
-        Debug.Log("Dialogue ended.");
     }
 
     IEnumerator Writer()
     {
         windowOnOff.OpenWindow();
-        Debug.Log("Opening window and displaying dialogue.");
 
         string t_ReplaceText = dialogues[lineCount].contexts[contextCount];
         t_ReplaceText = t_ReplaceText.Replace("$", ",");
@@ -89,7 +87,6 @@ public class DialogueManager : MonoBehaviour
         }
 
         isNext = true;
-        Debug.Log("Dialogue displayed: " + t_ReplaceText);
 
         yield return null;
     }

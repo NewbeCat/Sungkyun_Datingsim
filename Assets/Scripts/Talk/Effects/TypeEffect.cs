@@ -4,11 +4,9 @@ using UnityEngine;
 using TMPro;
 using Object = UnityEngine.Object;
 
-
-[RequireComponent(typeof(TMP_Text))]
 public class TypeEffect : MonoBehaviour
 {
-    private TMP_Text _textBox;
+    private TextMeshProUGUI _textBox;
 
     // Basic Typewriter Functionality
     private int _currentVisibleCharacterIndex;
@@ -42,7 +40,7 @@ public class TypeEffect : MonoBehaviour
 
     private void Awake()
     {
-        _textBox = GetComponent<TMP_Text>();
+        _textBox = GetComponent<TextMeshProUGUI>();
 
         _simpleDelay = new WaitForSeconds(1 / charactersPerSecond);
         _interpunctuationDelay = new WaitForSeconds(interpunctuationDelay);
