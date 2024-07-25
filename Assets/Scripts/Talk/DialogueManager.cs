@@ -10,8 +10,13 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] GameObject DialogueBar;
     OpenCloseWindow windowOnOff;
 
-    [SerializeField] TextMeshProUGUI txt_Dialogue;
+    [SerializeField] TextMeshProUGUI txt_Dialogue0; //without img
+    [SerializeField] TextMeshProUGUI txt_Dialogue1; //with img
+    private TextMeshProUGUI txt_Dialogue;
+
     [SerializeField] TextMeshProUGUI txt_Name;
+    [SerializeField] GameObject profileimg;
+
     [SerializeField] private TypeEffect typeEffect;
 
     Dialogue[] dialogues;
@@ -38,10 +43,10 @@ public class DialogueManager : MonoBehaviour
             if (isNext == true)
             {
                 isNext = false;
-                txt_Dialogue.text = "";
+                txt_Dialogue0.text = "";
+                txt_Dialogue1.text = "";
                 if (++contextCount < dialogues[lineCount].contexts.Length)
                 {
-                    Debug.Log("starting new writer");
                     StartCoroutine(Writer());
                 }
                 else
@@ -49,7 +54,6 @@ public class DialogueManager : MonoBehaviour
                     contextCount = 0;
                     if (++lineCount < dialogues.Length)
                     {
-                        Debug.Log("starting new writer of different speaker");
                         StartCoroutine(Writer());
                     }
                     else
@@ -60,7 +64,6 @@ public class DialogueManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Skippsies");
                 typeEffect.Skip();
             }
         }
@@ -68,7 +71,8 @@ public class DialogueManager : MonoBehaviour
 
     public void ShowDialogue(Dialogue[] p_dialogues)
     {
-        txt_Dialogue.text = "";
+        txt_Dialogue0.text = "";
+        txt_Dialogue1.text = "";
         txt_Name.text = "";
         dialogues = p_dialogues;
         isDialogue = true;
@@ -89,19 +93,36 @@ public class DialogueManager : MonoBehaviour
     IEnumerator Writer()
     {
         windowOnOff.OpenWindow();
-
         string t_ReplaceText = dialogues[lineCount].contexts[contextCount];
         t_ReplaceText = t_ReplaceText.Replace("$", ",");
-        typeEffect.TypingNewText(txt_Dialogue, t_ReplaceText);
 
+        //이름
         txt_Name.text = dialogues[lineCount].name == "N" ? "" : dialogues[lineCount].name;
+
+        //패널 설정
+        if (dialogues[lineCount].name == "N") // || dialogues[lineCount].imgname[contextCount] == "0")
+        {
+            txt_Dialogue = txt_Dialogue0;
+            profileimg.SetActive(false);
+        }
+        else
+        {
+            txt_Dialogue = txt_Dialogue1;
+            profileimg.SetActive(true);
+            //이미지 설정하기  if(dialogues[lineCount].imgname[contextCount] !=""){profileimg.이미지요소  =  함수(dialogues[lineCount].imgname[contextCount]) }
+        }
+
+        //글 적기
+        typeEffect.TypingNewText(txt_Dialogue, t_ReplaceText);
 
         yield return null;
     }
 
     private void HandleComplete()
     {
+        //if(isSelection == true){ 선택이벤트(dialogues[lineCount].choicenum[contextCount]) }
+        //if(isSkip == true){ lineCount = dialogues[lineCount].skipnum[contextCount]; }
+        //else{isNext = true;}
         isNext = true;
-        Debug.Log("Typewriter complete, isNext set to true.");
     }
 }

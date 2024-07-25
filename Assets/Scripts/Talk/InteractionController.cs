@@ -5,22 +5,17 @@ using UnityEngine;
 public class InteractionController : MonoBehaviour
 {
     [SerializeField] GameObject scriptholder;
-
-    [SerializeField] GameObject profileDM;
-    [SerializeField] GameObject standDM;
-    DialogueManager profileD;
-    DialogueManager standingD;
+    [SerializeField] GameObject dialoguePanel;
+    DialogueManager dialogueManager;
 
     void Start()
     {
-        profileD = profileDM.GetComponent<DialogueManager>();
-        standingD = standDM.GetComponent<DialogueManager>();
+        dialogueManager = dialoguePanel.GetComponent<DialogueManager>();
     }
 
-    public void Prompt()
+    public void Prompt() // start는 어디서부터 다시 시작하는지 ID 숫자입니다.
     {
-        profileD.ShowDialogue(scriptholder.GetComponent<InteractionEvent>().GetDialogue());
+        dialogueManager.ShowDialogue(scriptholder.GetComponent<InteractionEvent>().GetDialogue());
     }
 
-    void interact() { }
 }

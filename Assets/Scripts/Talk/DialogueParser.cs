@@ -19,10 +19,19 @@ public class DialogueParser : MonoBehaviour
 
             dialogue.name = row[1];
             List<string> contextList = new List<string>();
+            //List<string> selectList = new List<string>();
+            //List<string> skipList = new List<string>();
+            //List<string> imageList = new List<string>();
+            //List<string> eventList = new List<string>();
 
             do
             {
                 contextList.Add(row[2]);
+                //selectList.Add(row[3]);
+                //skipList.Add(row[4]);
+                //imageList.Add(row[5]);
+                //eventList.Add(row[6]);
+
                 if (++i < data.Length)
                 {
                     row = data[i].Split(new char[] { ',' });
@@ -35,6 +44,10 @@ public class DialogueParser : MonoBehaviour
             } while (row[0].ToString() == "");
 
             dialogue.contexts = contextList.ToArray();
+            //dialogue.choicenum = selectList.ToArray();
+            //dialogue.skipnum = skipList.ToArray();
+            //dialogue.imgname = imageList.ToArray();
+            //dialogue.events = eventList.ToArray();
             dialogueList.Add(dialogue);
 
         }
