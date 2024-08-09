@@ -9,6 +9,9 @@ public class PlayerController : MonoBehaviour
     private bool isMoving;
     private Vector2 input;
 
+    [SerializeField] private LayerMask solidsLayer;
+    [SerializeField] private LayerMask interactableLayer;
+
     private void Update()
     {
         if (!isMoving)
@@ -24,14 +27,31 @@ public class PlayerController : MonoBehaviour
                 animator.SetFloat("moveY", input.y);
 
                 var targetPos = transform.position;
-                targetPos.x += input.x;
-                targetPos.y += input.y;
-                StartCoroutine(Move(targetPos));
+                targetPos.x += input.x / 2f;
+                targetPos.y += input.y / 2f;
+
+                if (IsWalkable(targetPos))
+                    StartCoroutine(Move(targetPos));
             }
         }
 
         animator.SetBool("isMoving", isMoving);
 
+        if (Input.GetKeyDown(KeyCode.Z)) Interact();
+
+    }
+
+    void Interact()
+    {
+        var facingDir = new Vector3(animator.GetFloat("moveX"), animator.GetFloat("moveY"));
+        var interactPos = transform.position + facingDir;
+        //Debug.DrawLine(transform.position, interactPos, Color.red, 1f);
+
+        var collider = Physics2D.OverlapCircle(interactPos, 0.2f, interactableLayer);
+        if (collider != null)
+        {
+            Debug.Log("상호작용 진행");
+        }
     }
 
     IEnumerator Move(Vector3 targetPos)
@@ -45,5 +65,14 @@ public class PlayerController : MonoBehaviour
         }
         transform.position = targetPos;
         isMoving = false;
+    }
+
+    private bool IsWalkable(Vector3 targetPos)
+    {
+        if (Physics2D.OverlapCircle(targetPos, 0.01f, solidsLayer | interactableLayer) != null)
+        {
+            return false;
+        }
+        return true;
     }
 }

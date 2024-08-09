@@ -12,8 +12,8 @@ TagManager:
   - Water
   - UI
   - 
-  - 
-  - 
+  - CollisionSolids
+  - Interactibles
   - 
   - 
   - 
@@ -40,4 +40,22 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 2868166485
+    locked: 0
+  - name: BackofPlayer
+    uniqueID: 2003923999
+    locked: 0
+  - name: Collision
+    uniqueID: 2938609245
+    locked: 0
+  - name: Player
+    uniqueID: 1970545103
+    locked: 0
+  - name: FrontofPlayer
+    uniqueID: 608165741
+    locked: 0
+  - name: Decor
+    uniqueID: 3067520049
     locked: 0
