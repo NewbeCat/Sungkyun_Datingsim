@@ -21,46 +21,16 @@ public class OpenCloseWindow : MonoBehaviour
     [Header("Animation Setup")]
     [SerializeField] private AnimateToDirection openDirection = AnimateToDirection.Top;
     [SerializeField] private AnimateToDirection closeDirection = AnimateToDirection.Bottom;
-    [Space]
     [SerializeField] private Vector2 distanceToAnimate = new Vector2(100, 100);
     [SerializeField] private AnimationCurve easingCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [Range(0, 1f)][SerializeField] private float animationDuration = 0.5f;
 
     private bool _isOpen;
     private Vector2 _initialPosition;
-    private Vector2 _currentPosition;
-
-    private Vector2 _upOffset;
-    private Vector2 _downOffset;
-    private Vector2 _leftOffset;
-    private Vector2 _rightOffset;
-
     private Coroutine _animateWindowCoroutine;
-
-    [Header("Helpers")]
-    [SerializeField] private bool displayGizmos = true;
 
     public static event Action OnOpenWindow;
     public static event Action OnCloseWindow;
-
-    private enum DisplayGizmosAtLocation
-    {
-        Open,
-        Close,
-        Both,
-        Situational,
-        None
-    }
-
-    private DisplayGizmosAtLocation gizmoHandler;
-    private Color gizmoOpenColor = Color.green;
-    private Color gizmoCloseColor = Color.red;
-    private Color gizmoInitalLocationColor = Color.grey;
-    private Vector2 _windowOpenPositionForGizmos;
-    private Vector2 _windowClosePositionForGizmos;
-    private Vector2 _initialPositionForGizmos;
-
-
 
     private void OnValidate()
     {
@@ -70,31 +40,15 @@ public class OpenCloseWindow : MonoBehaviour
             windowCanvasGroup = window.GetComponent<CanvasGroup>();
         }
 
-        distanceToAnimate.x = Mathf.Max(0, distanceToAnimate.x);
-        distanceToAnimate.y = Mathf.Max(0, distanceToAnimate.y);
-
-
-        _initialPosition = window.transform.position;
-
-        RecalculateGizmoPositions();
+        distanceToAnimate = new Vector2(Mathf.Max(0, distanceToAnimate.x), Mathf.Max(0, distanceToAnimate.y));
     }
 
-    #region AnimationFunctionality
-
-    private void Start()
+    private void Awake()
     {
-        _initialPosition = window.transform.position;
+        if (windowRectTransform == null) windowRectTransform = window.GetComponent<RectTransform>();
+        if (windowCanvasGroup == null) windowCanvasGroup = window.GetComponent<CanvasGroup>();
 
-        InitializeOffsetPositions();
-    }
-
-    private void InitializeOffsetPositions()
-    {
-        _upOffset = new Vector2(0, distanceToAnimate.y);
-        _downOffset = new Vector2(0, -distanceToAnimate.y);
-
-        _rightOffset = new Vector2(+distanceToAnimate.x, 0);
-        _leftOffset = new Vector2(-distanceToAnimate.x, 0);
+        _initialPosition = windowRectTransform.anchoredPosition;
     }
 
     public void ToggleOpenClose()
@@ -107,30 +61,30 @@ public class OpenCloseWindow : MonoBehaviour
 
     public void OpenWindow()
     {
-        if (_isOpen)
-            return;
+        if (_isOpen) return;
 
         _isOpen = true;
         OnOpenWindow?.Invoke();
 
-        if (_animateWindowCoroutine != null)
-            StopCoroutine(_animateWindowCoroutine);
-
-        _animateWindowCoroutine = StartCoroutine(AnimateWindow(true));
+        StartAnimation(true);
     }
 
     public void CloseWindow()
     {
-        if (!_isOpen)
-            return;
+        if (!_isOpen) return;
 
         _isOpen = false;
         OnCloseWindow?.Invoke();
 
+        StartAnimation(false);
+    }
+
+    private void StartAnimation(bool opening)
+    {
         if (_animateWindowCoroutine != null)
             StopCoroutine(_animateWindowCoroutine);
 
-        _animateWindowCoroutine = StartCoroutine(AnimateWindow(false));
+        _animateWindowCoroutine = StartCoroutine(AnimateWindow(opening));
     }
 
     private Vector2 GetOffset(AnimateToDirection direction)
@@ -138,139 +92,51 @@ public class OpenCloseWindow : MonoBehaviour
         switch (direction)
         {
             case AnimateToDirection.Top:
-                return _upOffset;
+                return new Vector2(0, distanceToAnimate.y);
             case AnimateToDirection.Bottom:
-                return _downOffset;
+                return new Vector2(0, -distanceToAnimate.y);
             case AnimateToDirection.Left:
-                return _leftOffset;
+                return new Vector2(-distanceToAnimate.x, 0);
             case AnimateToDirection.Right:
-                return _rightOffset;
+                return new Vector2(distanceToAnimate.x, 0);
             default:
-                return Vector3.zero;
+                return Vector2.zero;
         }
     }
 
     private IEnumerator AnimateWindow(bool open)
     {
-        if (open)
-            window.gameObject.SetActive(true);
-
-        _currentPosition = window.transform.position;
+        if (open) window.SetActive(true);
 
         float elapsedTime = 0;
-
-        Vector2 targetPosition = _currentPosition;
-
-        if (open)
-            targetPosition = _currentPosition + GetOffset(openDirection);
-        else
-            targetPosition = _currentPosition + GetOffset(closeDirection);
+        Vector2 startPosition = _initialPosition - (open ? GetOffset(openDirection) : Vector2.zero);
+        Vector2 targetPosition = _initialPosition + (open ? Vector2.zero : GetOffset(closeDirection));
 
         while (elapsedTime < animationDuration)
         {
-            float evaluationAtTime = easingCurve.Evaluate(elapsedTime / animationDuration);
+            float t = elapsedTime / animationDuration;
+            float curveValue = easingCurve.Evaluate(t);
 
-            window.transform.position = Vector2.Lerp(_currentPosition, targetPosition, evaluationAtTime);
-
-            windowCanvasGroup.alpha = open
-                ? Mathf.Lerp(0f, 1f, evaluationAtTime)
-                : Mathf.Lerp(1f, 0f, evaluationAtTime);
+            windowRectTransform.anchoredPosition = Vector2.Lerp(startPosition, targetPosition, curveValue);
+            windowCanvasGroup.alpha = Mathf.Lerp(open ? 0f : 1f, open ? 1f : 0f, curveValue);
+            windowCanvasGroup.interactable = open;
+            windowCanvasGroup.blocksRaycasts = open;
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        window.transform.position = targetPosition;
-
+        windowRectTransform.anchoredPosition = _initialPosition;
         windowCanvasGroup.alpha = open ? 1 : 0;
         windowCanvasGroup.interactable = open;
         windowCanvasGroup.blocksRaycasts = open;
 
         if (!open)
         {
-            window.gameObject.SetActive(false);
-            window.transform.position = _initialPosition;
+            window.SetActive(false);
+            windowRectTransform.anchoredPosition = _initialPosition;
         }
     }
-
-    #endregion
-
-    #region Visualisation
-    private void Refresh()
-    {
-        OnValidate();
-    }
-
-    private void RecalculateGizmoPositions()
-    {
-        InitializeOffsetPositions();
-
-        _initialPositionForGizmos = new Vector2(window.transform.position.x, window.transform.position.y) + windowRectTransform.rect.center;
-        _windowOpenPositionForGizmos = _initialPositionForGizmos + GetOffset(openDirection);
-        _windowClosePositionForGizmos = _windowOpenPositionForGizmos + GetOffset(closeDirection);
-    }
-
-
-    private void OnDrawGizmosSelected()
-    {
-        if (!displayGizmos)
-            return;
-
-        if (window == null)
-            return;
-
-        if (windowRectTransform == null)
-            return;
-
-        Gizmos.color = gizmoInitalLocationColor;
-        Gizmos.DrawWireCube(_initialPositionForGizmos, windowRectTransform.sizeDelta);
-
-        switch (gizmoHandler)
-        {
-            case DisplayGizmosAtLocation.Open:
-                DrawCube(_windowOpenPositionForGizmos, true);
-                break;
-
-            case DisplayGizmosAtLocation.Close:
-                DrawCube(_windowClosePositionForGizmos, false);
-                break;
-
-            case DisplayGizmosAtLocation.Both:
-                DrawCube(_windowClosePositionForGizmos, false);
-                DrawCube(_windowOpenPositionForGizmos, true);
-                break;
-
-            case DisplayGizmosAtLocation.Situational:
-                if (_isOpen)
-                    DrawCube(_windowClosePositionForGizmos, true);
-                else
-                    DrawCube(_windowOpenPositionForGizmos, false);
-                break;
-
-            default:
-            case DisplayGizmosAtLocation.None:
-                break;
-        }
-
-        if (gizmoHandler != DisplayGizmosAtLocation.None)
-            DrawIndicators();
-    }
-
-    private void DrawCube(Vector2 windowPosition, bool opens)
-    {
-        Gizmos.color = opens ? gizmoOpenColor : gizmoCloseColor;
-        Gizmos.DrawWireCube(windowPosition, windowRectTransform.sizeDelta);
-    }
-
-    private void DrawIndicators()
-    {
-        Gizmos.color = gizmoOpenColor;
-        Gizmos.DrawLine(_initialPositionForGizmos, _windowOpenPositionForGizmos);
-
-        Gizmos.color = gizmoCloseColor;
-        Gizmos.DrawLine(_windowOpenPositionForGizmos, _windowClosePositionForGizmos);
-    }
-
-
-    #endregion
 }
+
+

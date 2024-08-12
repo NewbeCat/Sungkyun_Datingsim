@@ -4,15 +4,27 @@ using UnityEngine;
 
 public class Mainmenu : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private OpenCloseWindow Options;
+    [SerializeField] private OptionsBtn OptionPanelScript;
+
+    public void StartBtn()
     {
-        
+        Debug.Log("StartsGame");
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ContinueBtn()
     {
-        
+        Debug.Log("OpensSaveSystem");
+    }
+
+    public void OnOptionBtn()
+    {
+        Options.OpenWindow();
+        OptionPanelScript.KeyOptionOpen();
+    }
+
+    public void EndBtn()
+    {
+        Debug.Log("EndGame");
     }
 }

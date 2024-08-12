@@ -54,6 +54,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void LoadData(GameData data)
+    {
+        this.transform.position = data.playerPosition;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.playerPosition = this.transform.position;
+    }
+
+
     IEnumerator Move(Vector3 targetPos)
     {
         isMoving = true;
