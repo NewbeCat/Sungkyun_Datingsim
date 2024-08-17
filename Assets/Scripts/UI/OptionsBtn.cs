@@ -1,19 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class OptionsBtn : MonoBehaviour
+public class OptionsBtn : Menu
 {
-    [SerializeField] private GameObject OptionPanel;
     [SerializeField] private OpenCloseWindow OptionOpen;
+    [SerializeField] private GameObject pastSelectedBtn;
+    [SerializeField] private GameObject firstSelectedBtn;
 
-    [SerializeField] private GameObject KeyPanel;
     [SerializeField] private OpenCloseWindow KeyOpen;
-    [SerializeField] private GameObject AudioPanel;
     [SerializeField] private OpenCloseWindow AudioOpen;
-    [SerializeField] private GameObject ScreenPanel;
     [SerializeField] private OpenCloseWindow ScreenOpen;
-    [SerializeField] private GameObject GameSettPanel;
     [SerializeField] private OpenCloseWindow GameSettOpen;
 
     public OpenCloseWindow CurrentOpen;
@@ -29,7 +27,17 @@ public class OptionsBtn : MonoBehaviour
         CurrentOpen.CloseWindow();
         CurrentOpen = null;
         yield return new WaitForSeconds(0.3f);
+        EventSystem.current.SetSelectedGameObject(null);  // 기존 선택 초기화
+        EventSystem.current.SetSelectedGameObject(pastSelectedBtn);  // 새로 선택할 버튼 설정
         OptionOpen.CloseWindow();
+    }
+
+    public void OpenOption()
+    {
+        OptionOpen.OpenWindow();
+        KeyOptionOpen();
+        EventSystem.current.SetSelectedGameObject(null);  // 기존 선택 초기화
+        EventSystem.current.SetSelectedGameObject(firstSelectedBtn);  // 새로 선택할 버튼 설정
     }
 
     public void KeyOptionOpen()

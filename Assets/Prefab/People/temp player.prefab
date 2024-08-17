@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5495149896957127296}
   - component: {fileID: 2841705350944007459}
   - component: {fileID: 3457547989555400643}
-  - component: {fileID: 8784983607404747676}
+  - component: {fileID: 8553206908648760052}
   m_Layer: 0
   m_Name: temp player
   m_TagString: Untagged
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayerID: 1970545103
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 478355950, guid: 47da3ae4a39f66b4abfe7e5efc8ad34e, type: 3}
+  m_Sprite: {fileID: 1243955862, guid: d29117c93ac863646a5ffa1027967bcd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -122,10 +122,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 5495149896957127296}
-  moveSpeed: 20
-  solidsLayer:
-    serializedVersion: 2
-    m_Bits: 128
+  moveSpeed: 4
+  rb: {fileID: 3457547989555400643}
   interactableLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -142,8 +140,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDrag: 3
+  m_AngularDrag: 4
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -156,8 +154,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!61 &8784983607404747676
-BoxCollider2D:
+--- !u!70 &8553206908648760052
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -188,16 +186,6 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.25, y: 1.5}
-    newSize: {x: 1.25, y: 1.5}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.1, y: 1.5}
-  m_EdgeRadius: 0
+  m_Offset: {x: 0, y: -0.1}
+  m_Size: {x: 0.6, y: 0.8}
+  m_Direction: 0

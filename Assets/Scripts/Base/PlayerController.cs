@@ -6,39 +6,43 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Animator animator;
     [SerializeField] private float moveSpeed;
-    private bool isMoving;
+    private Vector3 movement;
     private Vector2 input;
 
-    [SerializeField] private LayerMask solidsLayer;
+    [SerializeField] private Rigidbody2D rb;
     [SerializeField] private LayerMask interactableLayer;
 
     private void Update()
     {
-        if (!isMoving)
+        ProcessInputs();
+        Move();
+    }
+
+    private void ProcessInputs()
+    {
+        movement = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0.0f);
+        if (new Vector2(movement.x, movement.y) != Vector2.zero)
         {
-            input.x = Input.GetAxisRaw("Horizontal");
-            input.y = Input.GetAxisRaw("Vertical");
-
-            //if (input.x != 0) input.y = 0; //십자로만 움직이게 끊어내기
-
-            if (input != Vector2.zero)
-            {
-                animator.SetFloat("moveX", input.x);
-                animator.SetFloat("moveY", input.y);
-
-                var targetPos = transform.position;
-                targetPos.x += input.x / 2f;
-                targetPos.y += input.y / 2f;
-
-                if (IsWalkable(targetPos))
-                    StartCoroutine(Move(targetPos));
-            }
+            Animate();
+        }
+        else
+        {
+            animator.SetBool("isMoving", false);
         }
 
-        animator.SetBool("isMoving", isMoving);
+        if (movement.magnitude > 1.0f)
+        {
+            movement.Normalize();
+        }
 
         if (Input.GetKeyDown(KeyCode.Z)) Interact();
+    }
 
+    private void Animate()
+    {
+        animator.SetFloat("moveX", movement.x);
+        animator.SetFloat("moveY", movement.y);
+        animator.SetBool("isMoving", true);
     }
 
     void Interact()
@@ -65,25 +69,8 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    IEnumerator Move(Vector3 targetPos)
+    private void Move()
     {
-        isMoving = true;
-
-        while ((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-        transform.position = targetPos;
-        isMoving = false;
-    }
-
-    private bool IsWalkable(Vector3 targetPos)
-    {
-        if (Physics2D.OverlapCircle(targetPos, 0.01f, solidsLayer | interactableLayer) != null)
-        {
-            return false;
-        }
-        return true;
+        rb.velocity = new Vector2(moveSpeed * movement.x, moveSpeed * movement.y);
     }
 }
