@@ -84,6 +84,7 @@ public class FileDataHandler
         // base case - if the profileId is null, return right away
         if (profileId == null)
         {
+            Debug.Log("ProfileID is null");
             return;
         }
 
@@ -94,6 +95,7 @@ public class FileDataHandler
         {
             // create the directory the file will be written to if it doesn't already exist
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+            Debug.Log("Saving to path: " + fullPath);
 
             // serialize the C# game data object into Json
             string dataToStore = JsonUtility.ToJson(data, true);

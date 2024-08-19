@@ -585,7 +585,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 99
   m_TargetDisplay: 0
 --- !u!114 &7765744179814434110
 MonoBehaviour:
@@ -686,6 +686,7 @@ MonoBehaviour:
   displayText: {fileID: 7495302542872283285}
   confirmButton: {fileID: 3302998421286536189}
   cancelButton: {fileID: 9029987394445999764}
+  openCloseWindow: {fileID: 8351484523347724762}
 --- !u!1 &6565678754155855453
 GameObject:
   m_ObjectHideFlags: 0

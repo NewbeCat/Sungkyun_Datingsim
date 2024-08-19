@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System;
 
 public class DataPersistenceManager : MonoBehaviour
 {
     [Header("Debugging")]
     [SerializeField] private bool disableDataPersistence = false;
-    [SerializeField] private bool initializeDataIfNull = false;
     [SerializeField] private bool overrideSelectedProfileId = false;
-    [SerializeField] private string testSelectedProfileId = "test";
+    [SerializeField] private string testSelectedProfileId = "";
 
     [Header("File Storage Config")]
     [SerializeField] private string fileName;
@@ -20,7 +20,7 @@ public class DataPersistenceManager : MonoBehaviour
     private List<IDataPersistence> dataPersistenceObjects;
     private FileDataHandler dataHandler;
 
-    private string selectedProfileId = "";
+    [SerializeField] private string selectedProfileId = "1"; // 기본값을 숫자로 설정
 
     private Coroutine autoSaveCoroutine;
 
@@ -43,6 +43,7 @@ public class DataPersistenceManager : MonoBehaviour
 
         this.dataHandler = new FileDataHandler(Application.persistentDataPath, fileName, useEncryption);
 
+        // Initialize the selected profile ID at the start
         InitializeSelectedProfileId();
     }
 
@@ -64,9 +65,7 @@ public class DataPersistenceManager : MonoBehaviour
 
     public void ChangeSelectedProfileId(string newProfileId)
     {
-        // update the profile to use for saving and loading
         this.selectedProfileId = newProfileId;
-        // load the game, which will use that profile, updating our game data accordingly
         LoadGame();
     }
 
@@ -83,16 +82,48 @@ public class DataPersistenceManager : MonoBehaviour
     private void InitializeSelectedProfileId()
     {
         this.selectedProfileId = dataHandler.GetMostRecentlyUpdatedProfileId();
+
         if (overrideSelectedProfileId)
         {
             this.selectedProfileId = testSelectedProfileId;
             Debug.LogWarning("Overrode selected profile id with test id: " + testSelectedProfileId);
         }
+
+        // If no profile ID exists (e.g., first game), generate a new one
+        if (string.IsNullOrEmpty(this.selectedProfileId))
+        {
+            this.selectedProfileId = "1"; // 첫 번째 프로필은 기본적으로 1로 설정
+            Debug.Log("No profile ID found. Generated new profile ID: " + this.selectedProfileId);
+        }
     }
 
     public void NewGame()
     {
+        // Assign a new profile ID as the next available number
+        int newProfileId = GetNextProfileId();
+        this.selectedProfileId = newProfileId.ToString();
         this.gameData = new GameData();
+
+        Debug.Log("Created new GameData with profile ID: " + this.selectedProfileId);
+        SaveGame(); // Save the new game data with the newly created profile ID
+    }
+
+    private int GetNextProfileId()
+    {
+        // Load all existing profiles and find the highest profile ID
+        var allProfiles = dataHandler.LoadAllProfiles();
+        if (allProfiles == null || allProfiles.Count == 0)
+        {
+            return 1; // 첫 번째 프로필 ID는 1로 설정
+        }
+
+        // 프로필 ID는 문자열이므로 숫자로 변환하여 최대값을 찾음
+        int maxProfileId = allProfiles.Keys
+            .Select(id => int.Parse(id)) // 문자열 ID를 숫자로 변환
+            .Max();
+
+        // 다음 프로필 ID는 현재 최대값 + 1
+        return maxProfileId + 1;
     }
 
     public void LoadGame()
@@ -105,12 +136,6 @@ public class DataPersistenceManager : MonoBehaviour
 
         // load any saved data from a file using the data handler
         this.gameData = dataHandler.Load(selectedProfileId);
-
-        // start a new game if the data is null and we're configured to initialize data for debugging purposes
-        if (this.gameData == null && initializeDataIfNull)
-        {
-            NewGame();
-        }
 
         // if no data can be loaded, don't continue
         if (this.gameData == null)
@@ -144,14 +169,17 @@ public class DataPersistenceManager : MonoBehaviour
         // pass the data to other scripts so they can update it
         foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
         {
+            Debug.Log("Saving data for: " + dataPersistenceObj.GetType().Name);
             dataPersistenceObj.SaveData(gameData);
         }
 
+        gameData.profileID = selectedProfileId;
         // timestamp the data so we know when it was last saved
         gameData.lastUpdated = System.DateTime.Now.ToBinary();
 
         // save that data to a file using the data handler
         dataHandler.Save(gameData, selectedProfileId);
+        Debug.Log("Game data saved for profile ID: " + selectedProfileId);
     }
 
     private List<IDataPersistence> FindAllDataPersistenceObjects()
@@ -165,7 +193,23 @@ public class DataPersistenceManager : MonoBehaviour
 
     public bool HasGameData()
     {
-        return gameData != null;
+        // 데이터 지속성이 비활성화된 경우 false 반환
+        if (disableDataPersistence)
+        {
+            return false;
+        }
+
+        // 모든 프로필의 저장 데이터를 불러옴
+        Dictionary<string, GameData> allProfilesGameData = dataHandler.LoadAllProfiles();
+
+        // 불러온 데이터 중 하나라도 유효한 데이터가 있으면 true 반환
+        if (allProfilesGameData != null && allProfilesGameData.Values.Any(data => data != null))
+        {
+            return true;
+        }
+
+        // 유효한 데이터가 없으면 false 반환
+        return false;
     }
 
     public Dictionary<string, GameData> GetAllProfilesGameData()

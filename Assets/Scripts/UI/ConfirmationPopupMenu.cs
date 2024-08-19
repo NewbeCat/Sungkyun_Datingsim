@@ -11,10 +11,11 @@ public class ConfirmationPopupMenu : Menu
     [SerializeField] private TextMeshProUGUI displayText;
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
+    [SerializeField] private OpenCloseWindow openCloseWindow;
 
     public void ActivateMenu(string displayText, UnityAction confirmAction, UnityAction cancelAction)
     {
-        this.gameObject.SetActive(true);
+        openCloseWindow.OpenWindow();
 
         // set the display text
         this.displayText.text = displayText;
@@ -39,6 +40,6 @@ public class ConfirmationPopupMenu : Menu
 
     private void DeactivateMenu()
     {
-        this.gameObject.SetActive(false);
+        openCloseWindow.CloseWindow();
     }
 }

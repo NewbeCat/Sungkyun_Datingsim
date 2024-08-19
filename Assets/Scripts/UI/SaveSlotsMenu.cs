@@ -21,8 +21,9 @@ public class SaveSlotsMenu : Menu
     [Header("Save Slot Setup")]
     [SerializeField] private GameObject saveSlotPrefab; // 동적으로 생성할 SaveSlot Prefab
     [SerializeField] private Transform saveSlotContainer; // SaveSlot이 배치될 부모 객체
+    [SerializeField] private OpenCloseWindow savePanel;
 
-    private List<SaveSlot> saveSlots = new List<SaveSlot>();
+    [SerializeField] private List<SaveSlot> saveSlots = new List<SaveSlot>();
 
     private bool isLoadingGame = false;
 
@@ -38,7 +39,7 @@ public class SaveSlotsMenu : Menu
             SaveGameAndLoadScene();
         }
         // case - new game, but the save slot has data
-        else if (saveSlot.hasData)
+        else
         {
             confirmationPopupMenu.ActivateMenu(
                 "Starting a New Game with this slot will override the currently saved data. Are you sure?",
@@ -56,14 +57,9 @@ public class SaveSlotsMenu : Menu
                 }
             );
         }
-        // case - new game, and the save slot has no data
-        else
-        {
-            DataPersistenceManager.instance.ChangeSelectedProfileId(saveSlot.GetProfileId());
-            DataPersistenceManager.instance.NewGame();
-            SaveGameAndLoadScene();
-        }
     }
+
+    //needs code for new save file in saveslotmenu
 
     private void SaveGameAndLoadScene()
     {
@@ -78,11 +74,16 @@ public class SaveSlotsMenu : Menu
         DisableMenuButtons();
 
         confirmationPopupMenu.ActivateMenu(
-            "Are you sure you want to delete this saved data?",
+            "정말 삭제하시겠습니까?",
             // function to execute if we select 'yes'
             () =>
             {
                 DataPersistenceManager.instance.DeleteProfileData(saveSlot.GetProfileId());
+
+                // 리스트에서 해당 슬롯 제거
+                saveSlots.Remove(saveSlot);
+                Destroy(saveSlot.gameObject);
+
                 ActivateMenu(isLoadingGame);
             },
             // function to execute if we select 'cancel'
@@ -98,60 +99,65 @@ public class SaveSlotsMenu : Menu
         mainMenu.ActivateMenu();
         this.DeactivateMenu();
     }
-
     public void ActivateMenu(bool isLoadingGame)
     {
-        // set this menu to be active
-        this.gameObject.SetActive(true);
+        // Set this menu to be active
+        savePanel.OpenWindow();
 
-        // set mode
+        // Set mode
         this.isLoadingGame = isLoadingGame;
 
-        // load all of the profiles that exist
+        // Load all profiles' game data
         Dictionary<string, GameData> profilesGameData = DataPersistenceManager.instance.GetAllProfilesGameData();
+        Debug.Log("Profiles found: " + profilesGameData.Count);
+
+        // Enable back button
         backButton.interactable = true;
 
-        // 먼저 기존에 생성된 슬롯들을 모두 삭제
+        // Clear any existing slots before populating new ones
         foreach (Transform child in saveSlotContainer)
         {
             Destroy(child.gameObject);
         }
+        saveSlots.Clear();
 
-        saveSlots.Clear(); // 리스트 초기화
-
-        // loop through each save slot in the UI and set the content appropriately
+        // Create save slots dynamically based on the profiles' data
         GameObject firstSelected = backButton.gameObject;
         foreach (var profile in profilesGameData)
         {
-            GameObject newSlot = Instantiate(saveSlotPrefab, saveSlotContainer); // 슬롯을 동적으로 생성
+            if (profile.Value == null)
+            {
+                continue;
+            }
+
+            GameObject newSlot = Instantiate(saveSlotPrefab, saveSlotContainer);
             SaveSlot saveSlot = newSlot.GetComponent<SaveSlot>();
             saveSlots.Add(saveSlot);
 
             GameData profileData = profile.Value;
             saveSlot.SetData(profileData);
 
-            if (profileData == null && isLoadingGame)
+            // Set up the save & clear slot button to call OnSaveSlotClicked when clicked
+            saveSlot.GetSaveBtn().onClick.AddListener(() => OnSaveSlotClicked(saveSlot));
+            saveSlot.GetClearBtn().onClick.AddListener(() => OnClearClicked(saveSlot));
+
+            saveSlot.SetInteractable(true);
+            if (firstSelected.Equals(backButton.gameObject))
             {
-                saveSlot.SetInteractable(false);
+                firstSelected = saveSlot.gameObject;
             }
-            else
-            {
-                saveSlot.SetInteractable(true);
-                if (firstSelected.Equals(backButton.gameObject))
-                {
-                    firstSelected = saveSlot.gameObject;
-                }
-            }
+
         }
 
-        // set the first selected button
+        // Set the first selected button
         Button firstSelectedButton = saveSlots.Count > 0 ? saveSlots[0].GetSaveFileButton() : backButton;
         this.SetFirstSelected(firstSelectedButton);
     }
 
+
     public void DeactivateMenu()
     {
-        this.gameObject.SetActive(false);
+        savePanel.CloseWindow();
     }
 
     private void DisableMenuButtons()

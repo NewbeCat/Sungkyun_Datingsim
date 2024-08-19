@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 2246290419782693039}
   - component: {fileID: 564391904158208787}
   - component: {fileID: 5375362179785144192}
+  - component: {fileID: 5924674011670970075}
   m_Layer: 5
   m_Name: SaveSlot
   m_TagString: Untagged
@@ -211,6 +212,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5924674011670970075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5899327394844596554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16cb7782e90d39e4bbdcaa644e415e7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  profileID: 
+  playerName: {fileID: 7560630211607571900}
+  playtime: {fileID: 4854986498761000204}
+  clearBtn: {fileID: 3055899938356458887}
+  saveSlotBtn: {fileID: 7445727870074065933}
 --- !u!1 &7405363981154233872
 GameObject:
   m_ObjectHideFlags: 0

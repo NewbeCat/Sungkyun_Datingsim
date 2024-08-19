@@ -5,12 +5,12 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class ChooseName : Menu
+public class ChooseName : Menu, IDataPersistence
 {
     [Header("input Name")]
     [SerializeField] private TMP_InputField playerNameInput;
     [SerializeField] private GameObject alarm;
-    [SerializeField] private string playerName = "플레이어";
+    [SerializeField] public string playerName = "플레이어";
 
     [Header("startGame?")]
     [SerializeField] private bool startGame = false;
@@ -19,8 +19,14 @@ public class ChooseName : Menu
     [Header("Panel")]
     [SerializeField] private OpenCloseWindow namePanelOpen;
 
-    public void AwakePanel()
+    private void Awake()
     {
+        StartCoroutine(AwakeRoutine());
+    }
+
+    private IEnumerator AwakeRoutine()
+    {
+        yield return null;
         namePanelOpen.OpenWindow();
         playerNameInput.text = playerName;
         alarm.SetActive(false);
@@ -35,35 +41,47 @@ public class ChooseName : Menu
         }
         else
         {
-            DataPersistenceManager.instance.NewGame();
-            playerName = playerNameInput.text;
-            DataPersistenceManager.instance.SaveGame();
             StartCoroutine(SaveandMove());
         }
     }
 
     private IEnumerator SaveandMove()
     {
-        if (startGame)
-        {
-            DataPersistenceManager.instance.NewGame();
-        }
-
         playerName = playerNameInput.text;
 
         if (startGame)
         {
+            DataPersistenceManager.instance.NewGame();
+            Debug.Log("current name is" + playerName);
             DataPersistenceManager.instance.SaveGame();
+            namePanelOpen.CloseWindow();
+
             yield return new WaitForSeconds(0.3f);
             SceneManager.LoadSceneAsync(startGameScene);
         }
+        else
+        {
+            playerName = playerNameInput.text;
+            Debug.Log("current name is" + playerName);
+            DataPersistenceManager.instance.SaveGame();
+            namePanelOpen.CloseWindow();
+        }
 
-        namePanelOpen.CloseWindow();
     }
 
-    public void SaveData(ref GameData data)
+    public void SaveData(GameData data)
     {
+        if (data == null)
+        {
+            Debug.LogError("GameData object is null! SaveData cannot proceed.");
+            return;
+        }
         data.PlayerName = this.playerName;
+        Debug.Log(data.PlayerName);
+    }
+
+    public void LoadData(GameData data)
+    {
+        this.playerName = data.PlayerName;
     }
 }
-

@@ -346,7 +346,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72478cebafe286e43a580e7079247432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filename: 
+  disableDataPersistence: 0
+  initializeDataIfNull: 0
+  overrideSelectedProfileId: 0
+  testSelectedProfileId: test
+  fileName: help.json
+  useEncryption: 0
 --- !u!1 &6542591480686614100
 GameObject:
   m_ObjectHideFlags: 0

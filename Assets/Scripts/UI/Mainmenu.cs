@@ -8,8 +8,10 @@ using UnityEngine.EventSystems;
 public class Mainmenu : Menu
 {
     [SerializeField] private OpenCloseWindow SaveSystem;
+    [SerializeField] private SaveSlotsMenu saveSlotsMenu;
     [SerializeField] private OptionsBtn OptionPanelScript;
-    [SerializeField] private ChooseName NamePanel;
+
+    [SerializeField] private string startGameScene;
 
     [SerializeField] private Button newGameButton;
     [SerializeField] private Button loadGameButton;
@@ -51,20 +53,20 @@ public class Mainmenu : Menu
 
     public void StartBtn()
     {
-        this.DeactivateMenu();
-        NamePanel.AwakePanel();
+        DeactivateMenu();
+        SceneManager.LoadSceneAsync(startGameScene);
     }
 
     public void ContinueBtn()
     {
-        SaveSystem.OpenWindow();
-        this.DeactivateMenu();
+        DeactivateMenu();
+        saveSlotsMenu.ActivateMenu(true);
     }
 
     public void OnOptionBtn()
     {
+        DeactivateMenu();
         OptionPanelScript.OpenOption();
-        this.DeactivateMenu();
     }
 
     public void EndBtn()
