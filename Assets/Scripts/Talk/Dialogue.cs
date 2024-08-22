@@ -1,34 +1,46 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class Dialogue
+[CreateAssetMenu(fileName = "New Dialogue", menuName = "Dialogue/Dialogue Asset")]
+public class Dialogue : ScriptableObject
 {
-    //기본
-    [Tooltip("말하는 캐릭터 이름")]
-    public string name;
+    public List<DialogueTalk> dialogueTalk;
+    public DialogueType dialogueType = DialogueType.Normal;
+    public ConditionBase script;  // ConditionBase를 상속한 스크립트가 드래그 드롭으로 연결이 가능해야해
+    public List<Dialogue> nextDialogue;
+    public List<DialogueResponse> responses;
 
-    [Tooltip("대사")]
-    public string[] contexts;
+    // 조건에 따라 다음 노드를 반환
+    public Dialogue GetNextNodeBasedOnCondition()
+    {
+        if (dialogueType == DialogueType.ConditionBased && script != null)
+        {
+            return nextDialogue[script.condition_to_occur()];
+        }
+        return nextDialogue[0];
+    }
+}
 
-    [Tooltip("선택지")]
-    public string[] choicenum;
-
-    [Tooltip("스킵")]
-    public string[] skipnum;
-
-    //이미지
-    [Tooltip("이미지")]
-    public string[] imgname;
-
-    //오디오 등 기타 이벤트 public string[] events;
+//Dialogue Response
+[System.Serializable]
+public class DialogueResponse
+{
+    public string responseText;
+    public Dialogue nextNode;
 }
 
 [System.Serializable]
-public class DialogueEvent
+public class DialogueTalk
 {
-    public string name;
-    public Vector2 line;
-    public Dialogue[] dialogues;
+    public string speaker;
+    public string[] talkText;
+}
+
+public enum DialogueType
+{
+    Normal,
+    ConditionBased,
+    ResponseBased
 }

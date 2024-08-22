@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,27 +8,24 @@ using TMPro;
 
 public class DialogueManager : MonoBehaviour
 {
-    [SerializeField] GameObject DialogueBar;
-    OpenCloseWindow windowOnOff;
+    public static DialogueManager Instance { get; private set; }
 
-    [SerializeField] TextMeshProUGUI txt_Dialogue0; //without img
-    [SerializeField] TextMeshProUGUI txt_Dialogue1; //with img
-    private TextMeshProUGUI txt_Dialogue;
+    // UI references
+    public GameObject DialogueParent; // Main container for dialogue UI
+    public TextMeshProUGUI DialogTitleText, DialogBodyText, DialogBodyText1; // Text components for title and body
+    public GameObject responseButtonPrefab; // Prefab for generating response buttons
+    public Transform responseButtonContainer; // Container to hold response buttons
 
-    [SerializeField] TextMeshProUGUI txt_Name;
-    [SerializeField] GameObject profileimg;
-
+    [SerializeField] private OpenCloseWindow openCloseWindow;
     [SerializeField] private TypeEffect typeEffect;
+    public bool isDialogue = false;
+    private bool isNext = false;
+    private int lineCount = 0;
+    private int contextCount = 0;
 
-    Dialogue[] dialogues;
-    bool isDialogue = false; //대화중 여부
-    bool isNext = false; // 특정 키 입력 대기
-    int lineCount = 0;
-    int contextCount = 0;
-
-    void Start()
+    private Dialogue node;
+    private void Start()
     {
-        windowOnOff = DialogueBar.GetComponent<OpenCloseWindow>();
         typeEffect.CompleteTextRevealed += HandleComplete;
     }
 
@@ -36,23 +34,37 @@ public class DialogueManager : MonoBehaviour
         typeEffect.CompleteTextRevealed -= HandleComplete;
     }
 
-    void Update()
+    private void Awake()
     {
-        if (isDialogue == true && Input.GetKeyDown(KeyCode.Space))
+        // Singleton pattern to ensure only one instance of DialogueManager
+        if (Instance == null)
         {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Update()
+    {
+        if (isDialogue == true && Input.GetKeyDown(KeyCode.Z)) // for some reason has a problem with spacebar
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            Debug.Log($"isNext: {isNext}");
             if (isNext == true)
             {
                 isNext = false;
-                txt_Dialogue0.text = "";
-                txt_Dialogue1.text = "";
-                if (++contextCount < dialogues[lineCount].contexts.Length)
+                DialogBodyText.text = "";
+                if (++contextCount < node.dialogueTalk[lineCount].talkText.Length)
                 {
                     StartCoroutine(Writer());
                 }
                 else
                 {
                     contextCount = 0;
-                    if (++lineCount < dialogues.Length)
+                    if (++lineCount < node.dialogueTalk.Count)
                     {
                         StartCoroutine(Writer());
                     }
@@ -64,65 +76,107 @@ public class DialogueManager : MonoBehaviour
             }
             else
             {
+                Debug.Log("Skipping");
                 typeEffect.Skip();
             }
         }
     }
 
-    public void ShowDialogue(Dialogue[] p_dialogues)
+    // Starts the dialogue with given title and dialogue node
+    public void StartDialogue(Dialogue gotnode)
     {
-        txt_Dialogue0.text = "";
-        txt_Dialogue1.text = "";
-        txt_Name.text = "";
-        dialogues = p_dialogues;
-        isDialogue = true;
+        // Display the dialogue UI
+        ShowDialogue();
+        node = gotnode;
+
         StartCoroutine(Writer());
     }
 
-    void EndDialogue()
+    private void EndDialogue()
+    {
+        if (node.dialogueType == DialogueType.Normal)
+        {
+            HideDialogue();
+        }
+        else if (node.dialogueType == DialogueType.ConditionBased)
+        {
+            StartDialogue(node.nextDialogue[node.script.condition_to_occur()]);
+        }
+        else
+        {
+            // Remove any existing response buttons
+            foreach (Transform child in responseButtonContainer)
+            {
+                Destroy(child.gameObject);
+            }
+
+            for (int i = 0; i < node.responses.Count; i++)
+            {
+                GameObject buttonObj = Instantiate(responseButtonPrefab, responseButtonContainer);
+                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = node.responses[i].responseText;
+
+                // Setup button to trigger SelectResponse when clicked
+                buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectResponse(node.responses[i], i));
+            }
+        }
+
+    }
+
+    // Handles response selection and triggers next dialogue node
+    public void SelectResponse(DialogueResponse response, int index)
+    {
+        node.script.action_by_choice(index);
+
+        // Check if there's a follow-up node
+        if (response.nextNode != null)
+        {
+            StartDialogue(response.nextNode); // Start next dialogue
+        }
+        else
+        {
+            // If no follow-up node, end the dialogue
+            HideDialogue();
+        }
+    }
+
+    // Hide the dialogue UI
+    public void HideDialogue()
     {
         isDialogue = false;
-        contextCount = 0;
-        lineCount = 0;
-        dialogues = null;
         isNext = false;
-        EventSystem.current.SetSelectedGameObject(null); // 눌럿던 버튼에 집중하는 일을 방지 - space버튼만 생기는 에러
-        windowOnOff.CloseWindow();
+        lineCount = 0;
+        contextCount = 0;
+        if (DialogueParent.activeSelf) openCloseWindow.CloseWindow();
+    }
+
+    // Show the dialogue UI
+    private void ShowDialogue()
+    {
+        if (!DialogueParent.activeSelf) openCloseWindow.OpenWindow();
+        isDialogue = true;
+        isNext = false;
+        lineCount = 0;
+        contextCount = 0;
+    }
+
+    // Check if dialogue is currently active
+    public bool IsDialogueActive()
+    {
+        return DialogueParent.activeSelf;
     }
 
     IEnumerator Writer()
     {
-        windowOnOff.OpenWindow();
-        string t_ReplaceText = dialogues[lineCount].contexts[contextCount];
-        t_ReplaceText = t_ReplaceText.Replace("$", ",");
-
-        //이름
-        txt_Name.text = dialogues[lineCount].name == "N" ? "" : dialogues[lineCount].name;
-
-        //패널 설정
-        if (dialogues[lineCount].name == "N") // || dialogues[lineCount].imgname[contextCount] == "0")
-        {
-            txt_Dialogue = txt_Dialogue0;
-            profileimg.SetActive(false);
-        }
-        else
-        {
-            txt_Dialogue = txt_Dialogue1;
-            profileimg.SetActive(true);
-            //이미지 설정하기  if(dialogues[lineCount].imgname[contextCount] !=""){profileimg.이미지요소  =  함수(dialogues[lineCount].imgname[contextCount]) }
-        }
-
-        //글 적기
-        typeEffect.TypingNewText(txt_Dialogue, t_ReplaceText);
+        if (node.dialogueTalk[lineCount].speaker != null) DialogTitleText.text = node.dialogueTalk[lineCount].speaker == "N" ? "" : node.dialogueTalk[lineCount].speaker;
+        typeEffect.TypingNewText(DialogBodyText, node.dialogueTalk[lineCount].talkText[contextCount]);
 
         yield return null;
     }
 
     private void HandleComplete()
     {
-        //if(isSelection == true){ 선택이벤트(dialogues[lineCount].choicenum[contextCount]) }
-        //if(isSkip == true){ lineCount = dialogues[lineCount].skipnum[contextCount]; }
-        //else{isNext = true;}
         isNext = true;
+        Debug.Log($"isNext: {isNext}");
     }
+
 }

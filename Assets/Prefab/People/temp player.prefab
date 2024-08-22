@@ -123,6 +123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 5495149896957127296}
   moveSpeed: 4
+  interactPos: {x: 0, y: 0, z: 0}
   rb: {fileID: 3457547989555400643}
   interactableLayer:
     serializedVersion: 2
@@ -186,6 +187,6 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.1}
-  m_Size: {x: 0.6, y: 0.8}
+  m_Offset: {x: 0, y: -0.3}
+  m_Size: {x: 0.6, y: 0.5}
   m_Direction: 0

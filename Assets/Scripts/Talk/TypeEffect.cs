@@ -66,12 +66,10 @@ public class TypeEffect : MonoBehaviour
     private IEnumerator Typewriter(string newstring)
     {
         maxlength = newstring.Length;
-        Debug.Log("max = " + maxlength);
 
-        while (_currentVisibleCharacterIndex < maxlength + 1)
+        while (_currentVisibleCharacterIndex <= maxlength)
         {
-            var lastCharacterIndex = maxlength - 1;
-            Debug.Log("last size =" + lastCharacterIndex);
+            var lastCharacterIndex = maxlength;
 
             if (_currentVisibleCharacterIndex >= lastCharacterIndex)
             {
@@ -109,7 +107,7 @@ public class TypeEffect : MonoBehaviour
         CurrentlySkipping = true;
 
         StopCoroutine(_typewriterCoroutine);
-        _textBox.maxVisibleCharacters = maxlength - 1;
+        _textBox.maxVisibleCharacters = maxlength;
         CompleteTextRevealed?.Invoke();
     }
 }

@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class InteractionEvent : MonoBehaviour
 {
-    [SerializeField] DialogueEvent dialogue;
+    public Dialogue Dialogue;
 
-    public Dialogue[] GetDialogue()
+    private void Update()
     {
-        dialogue.dialogues = DatabaseManager.instance.GetDialogue((int)dialogue.line.x, (int)dialogue.line.y);
-        return dialogue.dialogues;
+    }
+
+    // Trigger dialogue for this actor
+    public void SpeakTo()
+    {
+        DialogueManager.Instance.StartDialogue(Dialogue);
     }
 }
