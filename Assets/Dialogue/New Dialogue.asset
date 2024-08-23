@@ -21,11 +21,14 @@ MonoBehaviour:
     talkText:
     - I don't know man
     - Does it work??
+  dialogueType0: 2
+  isItBranch0: 0
   dialogueType: 2
+  isItBranch: 0
   script: {fileID: 11400000, guid: 5667c3df11a08eb41af2f1f90bc53c72, type: 2}
   nextDialogue: []
   responses:
-  - responseText: there shouldn't be an answer
-    nextNode: {fileID: 0}
-  - responseText: is there an answer?
+  - responseText: firstButton
     nextNode: {fileID: 11400000, guid: 5c76d6360228afb4abf1ccb1c314b7c7, type: 2}
+  - responseText: secondButton
+    nextNode: {fileID: 11400000, guid: f78b7471bb5dd8e49a32337caad099fe, type: 2}

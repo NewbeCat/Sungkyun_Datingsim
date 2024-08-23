@@ -5,9 +5,11 @@ using UnityEngine;
 public class InteractionEvent : MonoBehaviour
 {
     public Dialogue Dialogue;
+    [SerializeField] private bool startRightNow = false;
 
-    private void Update()
+    private void Start()
     {
+        if (startRightNow) SpeakTo();
     }
 
     // Trigger dialogue for this actor

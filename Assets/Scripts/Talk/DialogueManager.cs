@@ -51,12 +51,9 @@ public class DialogueManager : MonoBehaviour
     {
         if (isDialogue == true && Input.GetKeyDown(KeyCode.Z)) // for some reason has a problem with spacebar
         {
-            EventSystem.current.SetSelectedGameObject(null);
-            Debug.Log($"isNext: {isNext}");
             if (isNext == true)
             {
                 isNext = false;
-                DialogBodyText.text = "";
                 if (++contextCount < node.dialogueTalk[lineCount].talkText.Length)
                 {
                     StartCoroutine(Writer());
@@ -70,13 +67,14 @@ public class DialogueManager : MonoBehaviour
                     }
                     else
                     {
+                        //Debug.Log("end");
                         EndDialogue();
                     }
                 }
             }
             else
             {
-                Debug.Log("Skipping");
+                //Debug.Log("skip");
                 typeEffect.Skip();
             }
         }
@@ -87,6 +85,7 @@ public class DialogueManager : MonoBehaviour
     {
         // Display the dialogue UI
         ShowDialogue();
+        //Debug.Log(gotnode);
         node = gotnode;
 
         StartCoroutine(Writer());
@@ -94,47 +93,63 @@ public class DialogueManager : MonoBehaviour
 
     private void EndDialogue()
     {
-        if (node.dialogueType == DialogueType.Normal)
+        isNext = false;
+        lineCount = 0;
+        contextCount = 0;
+        //Debug.Log(node + ", " + node.isItBranch);
+        if (node.isItBranch == IsItBranch.No)
         {
-            HideDialogue();
-        }
-        else if (node.dialogueType == DialogueType.ConditionBased)
-        {
-            StartDialogue(node.nextDialogue[node.script.condition_to_occur()]);
+            node.reset();
+            if (node.dialogueType == DialogueType.Normal)
+            {
+                HideDialogue();
+            }
+            else if (node.dialogueType == DialogueType.ConditionBased)
+            {
+                StartDialogue(node.nextDialogue[node.script.condition_to_occur()]);
+            }
+            else if (node.dialogueType == DialogueType.ResponseBased)
+            {
+                for (int i = 0; i < node.responses.Count; i++)
+                {
+                    GameObject buttonObj = Instantiate(responseButtonPrefab, responseButtonContainer);
+                    buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = node.responses[i].responseText;
+
+                    // Setup button to trigger SelectResponse when clicked
+                    int capturedIndex = i;
+                    DialogueResponse capturedresponse = node.responses[capturedIndex];
+                    ConditionBase capturedscript = node.script;
+                    buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectResponse(capturedscript, capturedresponse, capturedIndex));
+                }
+            }
         }
         else
         {
-            // Remove any existing response buttons
-            foreach (Transform child in responseButtonContainer)
-            {
-                Destroy(child.gameObject);
-            }
-
-            for (int i = 0; i < node.responses.Count; i++)
-            {
-                GameObject buttonObj = Instantiate(responseButtonPrefab, responseButtonContainer);
-                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = node.responses[i].responseText;
-
-                // Setup button to trigger SelectResponse when clicked
-                buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectResponse(node.responses[i], i));
-            }
+            TurnOnOffBtns(true);
         }
 
     }
 
-    // Handles response selection and triggers next dialogue node
-    public void SelectResponse(DialogueResponse response, int index)
+    public void changeBranch()
     {
-        node.script.action_by_choice(index);
+        DestroyBtns();
+        node.isItBranch = IsItBranch.No;
+        Debug.Log(node + ", " + node.isItBranch);
+    }
 
+    // Handles response selection and triggers next dialogue node
+    public void SelectResponse(ConditionBase currentscript, DialogueResponse response, int index)
+    {
         // Check if there's a follow-up node
         if (response.nextNode != null)
         {
             StartDialogue(response.nextNode); // Start next dialogue
+            currentscript.action_by_choice(index);
         }
         else
         {
             // If no follow-up node, end the dialogue
+            currentscript.action_by_choice(index);
             HideDialogue();
         }
     }
@@ -146,7 +161,22 @@ public class DialogueManager : MonoBehaviour
         isNext = false;
         lineCount = 0;
         contextCount = 0;
+        DestroyBtns();
         if (DialogueParent.activeSelf) openCloseWindow.CloseWindow();
+    }
+
+    public void DestroyBtns()
+    {
+        TurnOnOffBtns(true);
+        foreach (Transform child in responseButtonContainer)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    public void TurnOnOffBtns(bool onoff)
+    {
+        responseButtonContainer.gameObject.SetActive(onoff);
     }
 
     // Show the dialogue UI
@@ -157,12 +187,6 @@ public class DialogueManager : MonoBehaviour
         isNext = false;
         lineCount = 0;
         contextCount = 0;
-    }
-
-    // Check if dialogue is currently active
-    public bool IsDialogueActive()
-    {
-        return DialogueParent.activeSelf;
     }
 
     IEnumerator Writer()
@@ -176,7 +200,5 @@ public class DialogueManager : MonoBehaviour
     private void HandleComplete()
     {
         isNext = true;
-        Debug.Log($"isNext: {isNext}");
     }
-
 }

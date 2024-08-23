@@ -7,6 +7,18 @@ using UnityEngine;
 public class TestCondition : ConditionBase
 {
     public bool testVar = false;
+    private bool firstbtns = false;
+    private bool secondbtns = false;
+
+    [SerializeField] private bool first;
+    [SerializeField] private bool second;
+
+    public override void reset()
+    {
+        firstbtns = first;
+        secondbtns = second;
+    }
+
     public override int condition_to_occur()
     {
         if (testVar == true) { return 1; }
@@ -15,16 +27,16 @@ public class TestCondition : ConditionBase
 
     public override void action_by_choice(int index)
     {
-        if (index == 0)
+        if (index == 0) { firstbtns = true; }
+        else if (index == 1) { secondbtns = true; }
+
+        if (firstbtns == true && secondbtns == true)
         {
-            Debug.Log("react correctly for 0");
+            DialogueManager.Instance.changeBranch();
         }
-
-        if (index == 1)
+        else
         {
-            Debug.Log("react correctly for 1");
+            DialogueManager.Instance.TurnOnOffBtns(false);
         }
-
-
     }
 }

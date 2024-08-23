@@ -16,7 +16,10 @@ MonoBehaviour:
   - speaker: Success
     talkText:
     - I guess we did it!!
+  dialogueType0: 0
+  isItBranch0: 1
   dialogueType: 0
+  isItBranch: 1
   script: {fileID: 0}
   nextDialogue: []
   responses: []

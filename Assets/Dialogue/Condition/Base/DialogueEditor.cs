@@ -6,6 +6,7 @@ public class DialogueEditor : Editor
 {
     SerializedProperty talk;
     SerializedProperty type;
+    SerializedProperty branch;
     SerializedProperty script;
     SerializedProperty nextDialogue;
     SerializedProperty responses;
@@ -13,7 +14,8 @@ public class DialogueEditor : Editor
     void OnEnable()
     {
         talk = serializedObject.FindProperty("dialogueTalk");
-        type = serializedObject.FindProperty("dialogueType");
+        type = serializedObject.FindProperty("dialogueType0");
+        branch = serializedObject.FindProperty("isItBranch0");
         script = serializedObject.FindProperty("script");
         nextDialogue = serializedObject.FindProperty("nextDialogue");
         responses = serializedObject.FindProperty("responses");
@@ -25,6 +27,7 @@ public class DialogueEditor : Editor
 
         EditorGUILayout.PropertyField(talk);
         EditorGUILayout.PropertyField(type);
+        EditorGUILayout.PropertyField(branch);
 
         // Correctly compare the enum value using enumValueIndex
         if (type.enumValueIndex == (int)DialogueType.ConditionBased)

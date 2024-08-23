@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: New TestCondition
   m_EditorClassIdentifier: 
   testVar: 0
+  first: 0
+  second: 0
