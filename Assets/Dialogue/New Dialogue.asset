@@ -16,14 +16,11 @@ MonoBehaviour:
   - speaker: PersonA
     talkText:
     - Talk
-    - Does it work?
   - speaker: PersonB
     talkText:
-    - I don't know man
     - Does it work??
-  dialogueType0: 2
-  isItBranch0: 0
-  dialogueType: 2
+  dialogueType0: 3
+  dialogueType: 3
   isItBranch: 0
   script: {fileID: 11400000, guid: 5667c3df11a08eb41af2f1f90bc53c72, type: 2}
   nextDialogue: []

@@ -23,6 +23,9 @@ public class DialogueManager : MonoBehaviour
     private int lineCount = 0;
     private int contextCount = 0;
 
+    private int responseCount = 0;
+    private int responseCount0 = 0;
+
     private Dialogue node;
     private void Start()
     {
@@ -80,10 +83,8 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    // Starts the dialogue with given title and dialogue node
     public void StartDialogue(Dialogue gotnode)
     {
-        // Display the dialogue UI
         ShowDialogue();
         //Debug.Log(gotnode);
         node = gotnode;
@@ -100,15 +101,16 @@ public class DialogueManager : MonoBehaviour
         if (node.isItBranch == IsItBranch.No)
         {
             node.reset();
+            DestroyBtns();
             if (node.dialogueType == DialogueType.Normal)
             {
                 HideDialogue();
             }
-            else if (node.dialogueType == DialogueType.ConditionBased)
+            else if (node.dialogueType == DialogueType.Condition)
             {
                 StartDialogue(node.nextDialogue[node.script.condition_to_occur()]);
             }
-            else if (node.dialogueType == DialogueType.ResponseBased)
+            else
             {
                 for (int i = 0; i < node.responses.Count; i++)
                 {
@@ -117,9 +119,17 @@ public class DialogueManager : MonoBehaviour
 
                     // Setup button to trigger SelectResponse when clicked
                     int capturedIndex = i;
-                    DialogueResponse capturedresponse = node.responses[capturedIndex];
+                    List<DialogueResponse> capturedresponse = node.responses;
                     ConditionBase capturedscript = node.script;
-                    buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectResponse(capturedscript, capturedresponse, capturedIndex));
+
+                    buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectResponse(capturedscript, capturedresponse[capturedIndex], capturedIndex));
+
+                    if (node.dialogueType == DialogueType.ChoiceAll && node.responses[i].nextNode != null)
+                    {
+                        changeBranch(capturedresponse, true);
+                        responseCount = node.responses.Count;
+                        buttonObj.GetComponent<Button>().onClick.AddListener(() => ChoiceAllOptions(capturedresponse, buttonObj));
+                    }
                 }
             }
         }
@@ -129,32 +139,56 @@ public class DialogueManager : MonoBehaviour
         }
 
     }
-
-    public void changeBranch()
+    private void changeBranch(List<DialogueResponse> children, bool yesno)
     {
-        DestroyBtns();
-        node.isItBranch = IsItBranch.No;
-        Debug.Log(node + ", " + node.isItBranch);
+        foreach (DialogueResponse child in children)
+        {
+            if (yesno)
+            {
+                child.nextNode.isItBranch = IsItBranch.Yes;
+            }
+            else
+            {
+                child.nextNode.isItBranch = IsItBranch.No;
+            }
+        }
     }
-
-    // Handles response selection and triggers next dialogue node
     public void SelectResponse(ConditionBase currentscript, DialogueResponse response, int index)
     {
-        // Check if there's a follow-up node
+        TurnOnOffBtns(false);
+
         if (response.nextNode != null)
         {
-            StartDialogue(response.nextNode); // Start next dialogue
+            StartDialogue(response.nextNode);
             currentscript.action_by_choice(index);
         }
         else
         {
-            // If no follow-up node, end the dialogue
             currentscript.action_by_choice(index);
             HideDialogue();
         }
     }
-
-    // Hide the dialogue UI
+    public void DestroyBtns()
+    {
+        TurnOnOffBtns(true);
+        responseCount = responseCount0 = 0;
+        foreach (Transform child in responseButtonContainer)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+    public void TurnOnOffBtns(bool onoff)
+    {
+        responseButtonContainer.gameObject.SetActive(onoff);
+    }
+    private void ShowDialogue()
+    {
+        if (!DialogueParent.activeSelf) openCloseWindow.OpenWindow();
+        isDialogue = true;
+        isNext = false;
+        lineCount = 0;
+        contextCount = 0;
+    }
     public void HideDialogue()
     {
         isDialogue = false;
@@ -164,31 +198,6 @@ public class DialogueManager : MonoBehaviour
         DestroyBtns();
         if (DialogueParent.activeSelf) openCloseWindow.CloseWindow();
     }
-
-    public void DestroyBtns()
-    {
-        TurnOnOffBtns(true);
-        foreach (Transform child in responseButtonContainer)
-        {
-            Destroy(child.gameObject);
-        }
-    }
-
-    public void TurnOnOffBtns(bool onoff)
-    {
-        responseButtonContainer.gameObject.SetActive(onoff);
-    }
-
-    // Show the dialogue UI
-    private void ShowDialogue()
-    {
-        if (!DialogueParent.activeSelf) openCloseWindow.OpenWindow();
-        isDialogue = true;
-        isNext = false;
-        lineCount = 0;
-        contextCount = 0;
-    }
-
     IEnumerator Writer()
     {
         if (node.dialogueTalk[lineCount].speaker != null) DialogTitleText.text = node.dialogueTalk[lineCount].speaker == "N" ? "" : node.dialogueTalk[lineCount].speaker;
@@ -196,9 +205,17 @@ public class DialogueManager : MonoBehaviour
 
         yield return null;
     }
-
     private void HandleComplete()
     {
         isNext = true;
+    }
+    private void ChoiceAllOptions(List<DialogueResponse> res, GameObject buttons)
+    {
+        responseCount0++;
+        buttons.GetComponent<Button>().interactable = false;
+        if (responseCount == responseCount0)
+        {
+            changeBranch(res, false);
+        }
     }
 }

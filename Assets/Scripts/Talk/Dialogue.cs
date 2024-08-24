@@ -9,10 +9,9 @@ public class Dialogue : ScriptableObject
     public List<DialogueTalk> dialogueTalk;
 
     [SerializeField] private DialogueType dialogueType0;
-    [SerializeField] private IsItBranch isItBranch0;
     public DialogueType dialogueType;
     public IsItBranch isItBranch;
-    public ConditionBase script;  // ConditionBase를 상속한 스크립트가 드래그 드롭으로 연결이 가능해야해
+    public ConditionBase script;
     public List<Dialogue> nextDialogue;
     public List<DialogueResponse> responses;
 
@@ -24,14 +23,14 @@ public class Dialogue : ScriptableObject
     public void reset()
     {
         dialogueType = dialogueType0;
-        isItBranch = isItBranch0;
+        isItBranch = IsItBranch.No;
         if (script != null) script.reset();
     }
 
     // 조건에 따라 다음 노드를 반환
     public Dialogue GetNextNodeBasedOnCondition()
     {
-        if (dialogueType == DialogueType.ConditionBased && script != null)
+        if (dialogueType == DialogueType.Condition && script != null)
         {
             return nextDialogue[script.condition_to_occur()];
         }
@@ -57,8 +56,9 @@ public class DialogueTalk
 public enum DialogueType
 {
     Normal,
-    ConditionBased,
-    ResponseBased
+    Condition,
+    Choice,
+    ChoiceAll
 }
 
 public enum IsItBranch
