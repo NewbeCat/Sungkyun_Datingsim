@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Profile
+  m_EditorClassIdentifier: 
+  m_GroupName: Profile
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 8e6542ce65575a44187eb25bbef10177
+  m_SerializeEntries:
+  - m_GUID: a114ec81c83b55442bd9675b25ba5f3a
+    m_Address: "Assets/img/face/\uC2E0\uC9C0\uC758_2_\uBE44\uC6C3.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 78dc3c250fe70c34088ed1f30b38b17c
+    m_Address: "Assets/img/face/\uC2E0\uC9C0\uC758_1_\uB9D0.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac5e7cde6fb298a4195a2863767df446
+    m_Address: "Assets/img/face/\uC774\uC774\uB3C4_2_\uBBF8\uC18C.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ad17fef8746ea5498d2a80e9472974b
+    m_Address: "Assets/img/face/\uC774\uC774\uB3C4_4_\uB208\uC6C3\uC74C.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d7fe67aa6162ff49bfd7c58d5860572
+    m_Address: "Assets/img/face/\uC774\uC774\uB3C4_1_\uB9D0.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24ac3e5a7afa19b42b69877df4fc85aa
+    m_Address: "Assets/img/face/\uC8FC\uC778\uACF5_0_\uBB34\uD45C\uC815.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d42af4e772eeddc4c837f4be1b6da414
+    m_Address: "Assets/img/face/\uD558\uC774\uACBD_2_\uB2F9\uD669.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f89cf1770cbfd84ea531dd097abdf49
+    m_Address: "Assets/img/face/\uB3C4\uC81C\uC6B4_3_\uC6C3\uC74C.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea55e349fcd16db4d93bf3d60f31d652
+    m_Address: "Assets/img/face/\uB3C4\uC81C\uC6B4_2_\uBBF8\uC18C.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5538e671cb804c141b9b7e69935609c2
+    m_Address: "Assets/img/face/\uC8FC\uC778\uACF5_1_\uBB34\uD45C\uC815\uB9D0.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 68ab63b8213acda429dbfda38434014d
+    m_Address: "Assets/img/face/\uB3C4\uC81C\uC6B4_1_\uB9D0.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb9a5c482df9ce944a99a19a2b4f4f34
+    m_Address: "Assets/img/face/\uC774\uC774\uB3C4_5_\uB208\uC6C3\uC74C\uB9D0.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4e3707da72da574f805a3253b8c252b
+    m_Address: "Assets/img/face/\uB3C4\uC81C\uC6B4_0_\uBB34\uD45C\uC815.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b7466fa01f2ac2439f83cfafe8a28f2
+    m_Address: "Assets/img/face/\uB3C4\uC81C\uC6B4_5_\uB09C\uAC10.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6788bc76c22ae6b42beed62327cdb840
+    m_Address: "Assets/img/face/\uC2E0\uC9C0\uC758_4_\uD654.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2b20da1aa6e3f84c9743c67f962b69e
+    m_Address: "Assets/img/face/\uC774\uC774\uB3C4_3_\uBBF8\uC18C\uB9D0.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9936d17550860f0448553283db2ec988
+    m_Address: "Assets/img/face/\uD558\uC774\uACBD_0_\uBB34\uD45C\uC815.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6327c6ba17f42d4dbeb38aba583d111
+    m_Address: "Assets/img/face/\uC2E0\uC9C0\uC758_3_\uC9DC\uC99D.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31f78b9ed0286e649bf8b6bb9c283703
+    m_Address: "Assets/img/face/\uB3C4\uC81C\uC6B4_6_\uB180\uB78C.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6bf93dfbc5971f448c0035c4eca2683
+    m_Address: "Assets/img/face/\uB3C4\uC81C\uC6B4_4_\uC6C3\uC74C\uB9D0.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 121cfd2079ce5664db67066214c006fe
+    m_Address: "Assets/img/face/\uC2E0\uC9C0\uC758_0_\uBB34\uD45C\uC815.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3927254d1a3ae14492993d477385b51
+    m_Address: "Assets/img/face/\uC774\uC774\uB3C4_0_\uBB34\uD45C\uC815.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdc4d12afdc62184797501ec70694c32
+    m_Address: "Assets/img/face/\uD558\uC774\uACBD_1_\uB9D0.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 63dff3ace2a91a246a30cbea2ac87df2, type: 2}
+  m_SchemaSet:
+    m_Schemas: []

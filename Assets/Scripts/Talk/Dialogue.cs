@@ -50,7 +50,14 @@ public class DialogueResponse
 public class DialogueTalk
 {
     public string speaker = null;
-    public string[] talkText;
+    public DialogueImg[] talkText;
+}
+
+[System.Serializable]
+public class DialogueImg
+{
+    public string talkText;
+    public int face;
 }
 
 public enum DialogueType
