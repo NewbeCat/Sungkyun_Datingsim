@@ -83,18 +83,18 @@ public class PlayerController : MonoBehaviour, IDataPersistence
             }
             else
             {
-                return new Vector3(0f, -0.6f, 0f);
+                return new Vector3(0f, -0.5f, 0f);
             }
         }
         else
         {
             if (x > 0)
             {
-                return new Vector3(0.3f, -0.3f, 0f);
+                return new Vector3(0.2f, -0.25f, 0f);
             }
             else
             {
-                return new Vector3(-0.3f, -0.3f, 0f);
+                return new Vector3(-0.2f, -0.25f, 0f);
             }
         }
     }
