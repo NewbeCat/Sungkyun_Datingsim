@@ -41,6 +41,10 @@ public class PlayerController : MonoBehaviour, IDataPersistence
 
             if (Input.GetKeyDown(KeyCode.Z)) Interact();
         }
+        else
+        {
+            animator.SetBool("isMoving", false);
+        }
     }
 
     private void Animate()
@@ -53,19 +57,38 @@ public class PlayerController : MonoBehaviour, IDataPersistence
 
     void Interact()
     {
-        // 상호작용 위치 계산
-        Debug.Log(transform.localPosition);
         interactPos = transform.localPosition + facingDir;
         Debug.Log("current scanner" + interactPos);
 
         // 상호작용 가능한 오브젝트를 확인
         float radius = 0.1f; // 반지름을 적절히 설정
-        var collider = Physics2D.OverlapCircle(interactPos, radius, interactableLayer);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(interactPos, radius, interactableLayer);
 
-        // 결과 확인
-        if (collider != null)
+        if (colliders.Length > 0)
         {
-            Debug.Log("상호작용 진행");
+            Collider2D closestCollider = null;
+            float closestDistance = float.MaxValue;
+
+            foreach (var collider in colliders)
+            {
+                float distance = Vector2.Distance(transform.position, collider.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestCollider = collider;
+                }
+            }
+
+            if (closestCollider != null)
+            {
+                // 상호작용 스크립트를 탐색
+                var interactionEvent = closestCollider.GetComponent<InteractionEvent>();
+                if (interactionEvent != null)
+                {
+                    interactionEvent.SpeakTo();
+                    Debug.Log("상호작용 진행: " + closestCollider.name);
+                }
+            }
         }
         else
         {

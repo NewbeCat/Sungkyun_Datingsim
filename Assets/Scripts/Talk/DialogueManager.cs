@@ -107,7 +107,7 @@ public class DialogueManager : MonoBehaviour
             DestroyBtns();
             if (node.dialogueType == DialogueType.Normal)
             {
-                HideDialogue();
+                StartCoroutine(HideDialogue());
             }
             else if (node.dialogueType == DialogueType.Condition)
             {
@@ -152,14 +152,15 @@ public class DialogueManager : MonoBehaviour
         contextCount = 0;
     }
 
-    public void HideDialogue()
+    public IEnumerator HideDialogue()
     {
+        DestroyBtns();
+        if (DialogueParent.activeSelf) openCloseWindow.CloseWindow();
+        yield return new WaitForSeconds(0.4f);
         isDialogue = false;
         isNext = false;
         lineCount = 0;
         contextCount = 0;
-        DestroyBtns();
-        if (DialogueParent.activeSelf) openCloseWindow.CloseWindow();
     }
 
     IEnumerator Writer()
@@ -239,7 +240,7 @@ public class DialogueManager : MonoBehaviour
         else
         {
             if (currentscript != null) currentscript.action_by_choice(index);
-            HideDialogue();
+            StartCoroutine(HideDialogue());
         }
     }
 

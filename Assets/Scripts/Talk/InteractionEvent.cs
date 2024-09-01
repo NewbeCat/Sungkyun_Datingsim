@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class InteractionEvent : MonoBehaviour
 {
-    public Dialogue Dialogue;
-    [SerializeField] private bool startRightNow = false;
-
-    private void Start()
-    {
-        if (startRightNow) SpeakTo();
-    }
+    [SerializeField] private int currentDialogue = 0;
+    public Dialogue[] DialogueList;
 
     // Trigger dialogue for this actor
     public void SpeakTo()
     {
-        DialogueManager.Instance.StartDialogue(Dialogue);
+        DialogueManager.Instance.StartDialogue(DialogueList[currentDialogue]);
     }
+
+    public void changeNum(int num)
+    {
+        currentDialogue = num;
+    }
+
+    public void addNum() { currentDialogue++; }
+    public void minusNum() { currentDialogue--; }
 }

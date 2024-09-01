@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class ChooseName : Menu, IDataPersistence
+public class ChooseName : Menu
 {
     [Header("input Name")]
     [SerializeField] private TMP_InputField playerNameInput;
@@ -28,7 +28,7 @@ public class ChooseName : Menu, IDataPersistence
     {
         yield return null;
         namePanelOpen.OpenWindow();
-        playerNameInput.text = playerName;
+        playerNameInput.text = DataPersistenceManager.instance.currentPlayerName;
         alarm.SetActive(false);
     }
 
@@ -47,13 +47,11 @@ public class ChooseName : Menu, IDataPersistence
 
     private IEnumerator SaveandMove()
     {
-        playerName = playerNameInput.text;
+        DataPersistenceManager.instance.currentPlayerName = playerNameInput.text;
 
         if (startGame)
         {
             DataPersistenceManager.instance.NewGame();
-            Debug.Log("current name is" + playerName);
-            DataPersistenceManager.instance.SaveGame();
             namePanelOpen.CloseWindow();
 
             yield return new WaitForSeconds(0.3f);
@@ -61,27 +59,8 @@ public class ChooseName : Menu, IDataPersistence
         }
         else
         {
-            playerName = playerNameInput.text;
-            Debug.Log("current name is" + playerName);
-            DataPersistenceManager.instance.SaveGame();
             namePanelOpen.CloseWindow();
         }
 
-    }
-
-    public void SaveData(GameData data)
-    {
-        if (data == null)
-        {
-            Debug.LogError("GameData object is null! SaveData cannot proceed.");
-            return;
-        }
-        data.PlayerName = this.playerName;
-        Debug.Log(data.PlayerName);
-    }
-
-    public void LoadData(GameData data)
-    {
-        this.playerName = data.PlayerName;
     }
 }

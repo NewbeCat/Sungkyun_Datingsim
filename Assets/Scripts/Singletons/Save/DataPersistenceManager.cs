@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using System;
 
-public class DataPersistenceManager : MonoBehaviour
+public class DataPersistenceManager : MonoBehaviour, IDataPersistence
 {
     [Header("Debugging")]
     [SerializeField] private bool disableDataPersistence = false;
@@ -25,6 +25,9 @@ public class DataPersistenceManager : MonoBehaviour
     private Coroutine autoSaveCoroutine;
 
     public static DataPersistenceManager instance { get; private set; }
+
+    [Header("Name")]
+    public string currentPlayerName = "플레이어";
 
     private void Awake()
     {
@@ -103,6 +106,7 @@ public class DataPersistenceManager : MonoBehaviour
         int newProfileId = GetNextProfileId();
         this.selectedProfileId = newProfileId.ToString();
         this.gameData = new GameData();
+        this.gameData.PlayerName = currentPlayerName;
 
         Debug.Log("Created new GameData with profile ID: " + this.selectedProfileId);
         SaveGame(); // Save the new game data with the newly created profile ID
@@ -215,5 +219,22 @@ public class DataPersistenceManager : MonoBehaviour
     public Dictionary<string, GameData> GetAllProfilesGameData()
     {
         return dataHandler.LoadAllProfiles();
+    }
+
+
+    public void SaveData(GameData data)
+    {
+        if (data == null)
+        {
+            Debug.LogError("GameData object is null! SaveData cannot proceed.");
+            return;
+        }
+        data.PlayerName = currentPlayerName;
+        Debug.Log(data.PlayerName);
+    }
+
+    public void LoadData(GameData data)
+    {
+        currentPlayerName = data.PlayerName;
     }
 }
